@@ -181,7 +181,7 @@
     "region": {
       "code": "plateau-central",
       "name": "Plateau-Central",
-      "department": "Ziniaré & Manega (province de l'Oubritenga)",
+      "department": "Ziniaré & Manga (province de l'Oubritenga)",
       "coordinates": { "latitude": 12.5836, "longitude": -1.2836 }
     },
     "era": "Répertoire oral du plateau — intemporel",
@@ -315,9 +315,9 @@
     "credits": {
       "sources": [
         "Répertoire oral du plateau moaga (Oubritenga)",
-        "Veillées de conte du village de Manega"
+        "Veillées de conte du village de Manga"
       ],
-      "collectedAt": "Manega, collecte de démonstration 2026",
+      "collectedAt": "Manga, collecte de démonstration 2026",
       "license": "CC BY-SA 4.0 — jeu de démonstration"
     }
   },

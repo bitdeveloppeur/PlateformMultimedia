@@ -65,6 +65,13 @@ export interface StoryRegion {
 export const STORY_CATEGORIES = ['conte', 'legende', 'histoire'] as const;
 export type StoryCategory = (typeof STORY_CATEGORIES)[number];
 
+/** Libellés d'affichage des catégories (badges, chips, tooltips). */
+export const STORY_CATEGORY_LABELS: Readonly<Record<StoryCategory, string>> = {
+  conte: 'Conte',
+  legende: 'Légende',
+  histoire: 'Histoire',
+};
+
 /** Conteneurs audio acceptés par le moteur (Howler.js). */
 export const AUDIO_FORMATS = ['mp3', 'm4a', 'ogg', 'wav'] as const;
 export type AudioFormat = (typeof AUDIO_FORMATS)[number];
