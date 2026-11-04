@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yennenga — Livre ouvert</title>
+<style>
+:root{
+  --color-night:#0E0B09; --color-cream:#F2E6D3; --color-ember:#E8743B; --color-laterite:#C4552D;
+  --color-ink:#2A1D14; --color-page:#EBC2A8;
+  --font-display:"Fraunces",Georgia,serif; --font-ui:"Hanken Grotesk",system-ui,sans-serif; --font-mono:"JetBrains Mono",ui-monospace,monospace;
+  --ease-out:cubic-bezier(.16,1,.3,1); --ease-io:cubic-bezier(.65,0,.35,1);
+  --dur-pose:900ms;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:transparent}
+
+/* LAYOUT LIVRE - Côte à côte */
+.livre-container{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0;
+  width:100%;
+  height:100%;
+  font-family:var(--font-ui);
+}
+
+/* PAGE GAUCHE - Scène SVG */
+.page-gauche{
+  position:relative;
+  background:var(--color-indigo);
+  overflow:hidden;
+}
+
+#stage{width:100%;height:100%;display:block;touch-action:manipulation}
+#stage .actor{transform-box:view-box;transition:transform var(--dur-pose) var(--ease-io),opacity var(--dur-pose) var(--ease-io)}
+#stage .tap{cursor:pointer}
+#sky{transition:fill 1400ms var(--ease-io)}
+.layer{transition:opacity 1400ms var(--ease-io)}
+
+.bob{animation:bob .36s var(--ease-io) infinite alternate;animation-play-state:paused;transform-box:fill-box;transform-origin:50% 100%}
+.galloping .bob{animation-play-state:running}
+@keyframes bob{from{transform:translateY(0) rotate(-1deg)}to{transform:translateY(-14px) rotate(1.5deg)}}
+
+.dust circle{opacity:0}
+.galloping .dust circle{animation:dust .7s linear infinite}
+@keyframes dust{0%{opacity:.7;transform:translate(0,0) scale(.4)}100%{opacity:0;transform:translate(-90px,-30px) scale(1.4)}}
+
+.shake{animation:shake .5s var(--ease-io) 2;transform-box:fill-box;transform-origin:50% 90%}
+@keyframes shake{25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
+
+.plant{transform-box:fill-box;transform-origin:50% 100%;transform:scale(1,0);transition:transform 1100ms var(--ease-out)}
+.plant.grown{transform:scale(1,1)}
+.plant.dry{transform:scale(.96,.88) rotate(9deg);filter:saturate(.15) sepia(.7) brightness(.85)}
+
+.star{transition:transform 500ms,opacity 500ms;transform-box:fill-box;transform-origin:center}
+.star.off{opacity:.25}
+.star.on{opacity:1;transform:scale(1.5)}
+
+.bush{transform-box:fill-box;transform-origin:50% 100%;transition:transform 600ms}
+.bush.open{transform:translate(90px,10px) rotate(12deg)}
+
+.hint{pointer-events:none;transform-box:fill-box;transform-origin:center;opacity:0;transition:opacity 300ms}
+.hint.show{opacity:1;animation:ping 1.6s var(--ease-out) infinite}
+@keyframes ping{0%{transform:scale(.7);opacity:.9}100%{transform:scale(1.6);opacity:0}}
+
+.bubble{opacity:0;transition:opacity 300ms,transform 400ms;transform-box:fill-box;transform-origin:0 100%;transform:scale(.6)}
+.bubble.show{opacity:1;transform:scale(1)}
+
+/* PAGE DROITE - Texte */
+.page-droite{
+  padding:clamp(24px,4vw,48px);
+  background:
+    repeating-linear-gradient(90deg,transparent 0 78px,#C4552D14 78px 92px,transparent 92px 96px),
+    var(--color-page);
+  color:var(--color-ink);
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  overflow:auto;
+}
+
+.chap{
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:.12em;
+  color:var(--color-laterite);
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+
+.say{
+  font-family:var(--font-display);
+  font-size:clamp(18px,2vw,26px);
+  line-height:1.4;
+  margin:12px 0;
+  flex:1;
+}
+
+.task{
+  margin:16px 0;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:600;
+  font-size:14px;
+  color:var(--color-laterite);
+}
+
+.task svg{flex:none;width:18px;height:18px}
+
+.ctl{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-top:auto;
+  padding-top:20px;
+}
+
+.round{
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  border:1.5px solid rgba(42,29,20,0.3);
+  background:transparent;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  transition:transform 200ms,background 200ms;
+}
+
+.round:active{transform:scale(.94)}
+.round:disabled{opacity:.3;cursor:not-allowed}
+.round.go{background:var(--color-ink);color:var(--color-page);border-color:var(--color-ink)}
+
+.round.listen{
+  width:auto;
+  padding:0 18px;
+  border-radius:999px;
+  gap:8px;
+  display:flex;
+  font-weight:600;
+  white-space:nowrap;
+  font-size:14px;
+}
+</style>
+</head>
+<body>
+
+<div class="livre-container">
+  <!-- PAGE GAUCHE: Scène SVG -->
+  <div class="page-gauche">
+    <svg id="stage" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+      <rect id="sky" x="0" y="0" width="1600" height="900" fill="#EBC2A8"/>
+      <g id="starsBg" class="layer" opacity="0"></g>
+      <circle id="sun" class="actor" cx="1250" cy="230" r="70" fill="#F2E6D3"/>
+      <g id="savane" class="layer"><rect x="0" y="560" width="1600" height="340" fill="#DB9D48"/></g>
+      <rect id="night" x="0" y="0" width="1600" height="900" fill="#1b2347" opacity="0" style="mix-blend-mode:multiply"/>
+      <g id="forest" class="actor" opacity="0"></g>
+      <g id="king" class="actor tap" opacity="0"></g>
+      <g id="hunter" class="actor" opacity="0"></g>
+      <g id="mother" class="actor" opacity="0"></g>
+      <g id="rider" class="actor tap" transform="translate(540 400) scale(0.82)">
+        <g class="bob"></g>
+      </g>
+    </svg>
+  </div>
+
+  <!-- PAGE DROITE: Texte narratif -->
+  <div class="page-droite">
+    <div>
+      <p class="chap" id="chap">COUVERTURE</p>
+      <div class="say" id="say">
+        Une légende du peuple moaga, racontée pour les petits. Prêt·e ? Appuie sur la flèche.
+      </div>
+      <div class="task" id="task" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M7 10l5 5 5-5"/>
+        </svg>
+        <span id="taskText"></span>
+      </div>
+    </div>
+    
+    <div class="ctl">
+      <button class="round" id="prev" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+      <button class="round listen" id="listen">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+        </svg>
+        Écouter
+      </button>
+      <button class="round go" id="next">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Pages du conte (simplifié pour test)
+const pages = [
+  {
+    chap: "COUVERTURE",
+    text: "Une légende du peuple moaga, racontée pour les petits. Prêt·e ? Appuie sur la flèche.",
+    task: "",
+    scene: { sky: "#EBC2A8", rider: { x: 540, y: 400, s: 0.82 } }
+  },
+  {
+    chap: "1 · GAMBAGA",
+    text: "Il y a très longtemps, à Gambaga, vivait une princesse qui montait à cheval mieux que tous les guerriers du roi. Elle s'appelait Yennenga.",
+    task: "Touche le cheval pour qu'il galope.",
+    scene: { sky: "#F0C98F", rider: { x: 300, y: 340, s: 0.9 } }
+  },
+  {
+    chap: "2 · LE ROI NEDEGA",
+    text: "Son père, le roi Nedega, l'aimait tant qu'il refusait de la laisser partir ou se marier.",
+    task: "Touche le roi : que répond-il ?",
+    scene: { sky: "#F0C98F", rider: { x: 220, y: 370, s: 0.78 }, king: { x: 880, y: 400, s: 1.05 } }
+  }
+];
+
+let currentPage = 0;
+
+function updatePage() {
+  const page = pages[currentPage];
+  
+  // Texte
+  document.getElementById('chap').textContent = page.chap;
+  document.getElementById('say').textContent = page.text;
+  
+  if (page.task) {
+    document.getElementById('task').hidden = false;
+    document.getElementById('taskText').textContent = page.task;
+  } else {
+    document.getElementById('task').hidden = true;
+  }
+  
+  // Scène
+  updateScene(page.scene);
+  
+  // Boutons
+  document.getElementById('prev').disabled = currentPage === 0;
+  document.getElementById('next').disabled = currentPage === pages.length - 1;
+}
+
+function updateScene(scene) {
+  const sky = document.getElementById('sky');
+  const rider = document.getElementById('rider');
+  const king = document.getElementById('king');
+  
+  if (scene.sky) sky.setAttribute('fill', scene.sky);
+  
+  if (scene.rider) {
+    rider.setAttribute('transform', `translate(${scene.rider.x} ${scene.rider.y}) scale(${scene.rider.s})`);
+    rider.setAttribute('opacity', 1);
+  }
+  
+  if (scene.king) {
+    king.setAttribute('transform', `translate(${scene.king.x} ${scene.king.y}) scale(${scene.king.s})`);
+    king.setAttribute('opacity', 1);
+  } else {
+    king.setAttribute('opacity', 0);
+  }
+}
+
+document.getElementById('prev').addEventListener('click', () => {
+  if (currentPage > 0) {
+    currentPage--;
+    updatePage();
+  }
+});
+
+document.getElementById('next').addEventListener('click', () => {
+  if (currentPage < pages.length - 1) {
+    currentPage++;
+    updatePage();
+  }
+});
+
+// Interactions scène
+document.getElementById('stage').addEventListener('click', () => {
+  if (currentPage === 1) {
+    document.getElementById('stage').classList.add('galloping');
+    setTimeout(() => document.getElementById('stage').classList.remove('galloping'), 2000);
+  }
+});
+
+updatePage();
+</script>
+</body>
+</html>

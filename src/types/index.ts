@@ -4,3 +4,4 @@
  */
 export * from './story';
 export * from './triggers';
+export * from './stage';

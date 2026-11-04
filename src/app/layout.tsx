@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Playfair_Display } from 'next/font/google';
+import { Fraunces, Hanken_Grotesk, Inter, JetBrains_Mono, Playfair_Display } from 'next/font/google';
 import './globals.css';
 
 const display = Playfair_Display({
@@ -12,6 +12,28 @@ const display = Playfair_Display({
 const sans = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
+  display: 'swap',
+});
+
+/* Design-system « story.pen » — conte interactif (Étape conte page-par-page). */
+const taleDisplay = Fraunces({
+  subsets: ['latin'],
+  weight: ['400', '600'],
+  variable: '--font-tale-display',
+  display: 'swap',
+});
+
+const taleUi = Hanken_Grotesk({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  variable: '--font-tale-ui',
+  display: 'swap',
+});
+
+const taleMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-tale-mono',
   display: 'swap',
 });
 
@@ -32,7 +54,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={`${display.variable} ${sans.variable}`}>
+    <html
+      lang="fr"
+      className={`${display.variable} ${sans.variable} ${taleDisplay.variable} ${taleUi.variable} ${taleMono.variable}`}
+    >
       <body>{children}</body>
     </html>
   );

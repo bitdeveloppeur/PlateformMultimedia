@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --ease-io:cubic-bezier(.65,0,.35,1);
+  --dur-pose:900ms;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden}
+body{background:transparent}
+
+#stage{width:100%;height:100%;display:block;touch-action:manipulation}
+#stage .actor{transform-box:view-box;transition:transform var(--dur-pose) var(--ease-io),opacity var(--dur-pose) var(--ease-io)}
+#stage .tap{cursor:pointer}
+#sky{transition:fill 1400ms var(--ease-io)}
+.layer{transition:opacity 1400ms var(--ease-io)}
+
+/* Animations */
+.bob{animation:bob .36s var(--ease-io) infinite alternate;animation-play-state:paused;transform-box:fill-box;transform-origin:50% 100%}
+.galloping .bob{animation-play-state:running}
+@keyframes bob{from{transform:translateY(0) rotate(-1deg)}to{transform:translateY(-14px) rotate(1.5deg)}}
+
+.dust circle{opacity:0}
+.galloping .dust circle{animation:dust .7s linear infinite}
+@keyframes dust{0%{opacity:.7;transform:translate(0,0) scale(.4)}100%{opacity:0;transform:translate(-90px,-30px) scale(1.4)}}
+
+.shake{animation:shake .5s var(--ease-io) 2;transform-box:fill-box;transform-origin:50% 90%}
+@keyframes shake{25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
+
+.nuzzle{animation:nuzzle 1.2s var(--ease-io) 1;transform-box:fill-box;transform-origin:100% 50%}
+@keyframes nuzzle{50%{transform:translateX(-18px) rotate(-3deg)}}
+
+.plant{transform-box:fill-box;transform-origin:50% 100%;transform:scale(1,0);transition:transform 1100ms var(--ease-out),filter 1600ms var(--ease-io)}
+.plant.grown{transform:scale(1,1)}
+.plant.dry{transform:scale(.96,.88) rotate(9deg);filter:saturate(.15) sepia(.7) brightness(.85)}
+
+.star{transition:transform 500ms var(--ease-out),opacity 500ms var(--ease-out);transform-box:fill-box;transform-origin:center}
+.star.off{opacity:.25}
+.star.on{opacity:1;transform:scale(1.5)}
+
+.bush{transform-box:fill-box;transform-origin:50% 100%;transition:transform 600ms var(--ease-out)}
+.bush.open{transform:translate(90px,10px) rotate(12deg)}
+
+.hint{pointer-events:none;transform-box:fill-box;transform-origin:center;opacity:0;transition:opacity 300ms}
+.hint.show{opacity:1;animation:ping 1.6s var(--ease-out) infinite}
+@keyframes ping{0%{transform:scale(.7);opacity:.9}100%{transform:scale(1.6);opacity:0}}
+
+.bubble{opacity:0;transition:opacity 300ms var(--ease-out),transform 400ms var(--ease-out);transform-box:fill-box;transform-origin:0 100%;transform:scale(.6)}
+.bubble.show{opacity:1;transform:scale(1)}
+</style>
+</head>
+<body>
+<svg id="stage" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+  <rect id="sky" x="0" y="0" width="1600" height="900" fill="#EBC2A8"/>
+  <g id="starsBg" class="layer" opacity="0"></g>
+  <circle id="sun" class="actor" cx="1250" cy="230" r="70" fill="#F2E6D3"/>
+  <g id="savane" class="layer"><rect x="0" y="560" width="1600" height="340" fill="#DB9D48"/></g>
+  <rect id="night" x="0" y="0" width="1600" height="900" fill="#1b2347" opacity="0" style="mix-blend-mode:multiply"/>
+  <g id="forest" class="actor" transform="translate(1700 0)" opacity="0"></g>
+  <g id="king" class="actor tap" opacity="0"></g>
+  <g id="hunter" class="actor" opacity="0"></g>
+  <g id="mother" class="actor" opacity="0"></g>
+  <g id="rider" class="actor tap" transform="translate(540 400) scale(0.82)">
+    <g class="bob"></g>
+  </g>
+  <g id="gombo" class="layer" opacity="0"></g>
+  <g id="hint" class="hint"></g>
+  <g id="bubble" class="bubble"></g>
+</svg>
+
+<script>
+// Communication avec le parent via postMessage
+window.addEventListener('message', (event) => {
+  if (event.data.type === 'UPDATE_SCENE') {
+    updateScene(event.data.scene);
+  }
+  if (event.data.type === 'TRIGGER_ACTION') {
+    triggerAction(event.data.action);
+  }
+});
+
+function updateScene(scene) {
+  const sky = document.getElementById('sky');
+  const sun = document.getElementById('sun');
+  const night = document.getElementById('night');
+  const stars = document.getElementById('starsBg');
+  const rider = document.getElementById('rider');
+  const king = document.getElementById('king');
+  const forest = document.getElementById('forest');
+  
+  // Ciel
+  if (scene.sky) sky.setAttribute('fill', scene.sky);
+  
+  // Nuit
+  if (typeof scene.night === 'number') {
+    night.setAttribute('opacity', scene.night);
+  }
+  
+  // Étoiles
+  if (typeof scene.stars === 'number') {
+    stars.setAttribute('opacity', scene.stars);
+  }
+  
+  // Soleil
+  if (scene.sun) {
+    const x = 1250 + (scene.sun.x || 0);
+    const y = 230 + (scene.sun.y || 0);
+    const o = scene.sun.o ?? 1;
+    sun.setAttribute('cx', x);
+    sun.setAttribute('cy', y);
+    sun.setAttribute('opacity', o);
+  }
+  
+  // Cavalière
+  if (scene.rider) {
+    const tx = scene.rider.x || 0;
+    const ty = scene.rider.y || 0;
+    const s = scene.rider.s || 1;
+    rider.setAttribute('transform', `translate(${tx} ${ty}) scale(${s})`);
+    rider.setAttribute('opacity', 1);
+  }
+  
+  // Roi
+  if (scene.king) {
+    const tx = scene.king.x || 0;
+    const ty = scene.king.y || 0;
+    const s = scene.king.s || 1;
+    king.setAttribute('transform', `translate(${tx} ${ty}) scale(${s})`);
+    king.setAttribute('opacity', 1);
+  } else {
+    king.setAttribute('opacity', 0);
+  }
+  
+  // Forêt
+  if (scene.forest) {
+    const tx = scene.forest.x || 0;
+    forest.setAttribute('transform', `translate(${tx} 0)`);
+    forest.setAttribute('opacity', 1);
+  }
+}
+
+function triggerAction(action) {
+  const stage = document.getElementById('stage');
+  if (action === 'gallop') {
+    stage.classList.add('galloping');
+    setTimeout(() => stage.classList.remove('galloping'), 2000);
+  }
+}
+
+// Permettre le clic sur la scène pour déclencher actions
+document.getElementById('stage').addEventListener('click', (e) => {
+  window.parent.postMessage({ type: 'SCENE_CLICKED' }, '*');
+});
+</script>
+</body>
+</html>

@@ -32,6 +32,7 @@ import Map3D, {
 } from './Map3D';
 import StoryPlayerCard from './StoryPlayerCard';
 import { useMultilingualAudio } from '@/hooks/useMultilingualAudio';
+import { hasInteractiveScenes } from '@/data/scenes';
 import { LANGUAGE_LABELS, STORY_CATEGORY_LABELS, type Story } from '@/types';
 
 /** Fenêtre pendant laquelle l'auto-suivi renonce après un scroll utilisateur. */
@@ -261,6 +262,14 @@ export default function StoryExperience({ story }: { story: Story }) {
                     </>
                   )}
                 </button>
+                {hasInteractiveScenes(story.id) && (
+                  <Link className="sxp__tale-link" href={`/recits/${story.id}/conte`}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                      <path d="M12 3l1.9 5.6L19.5 10l-4.3 3.5L16.5 19 12 15.9 7.5 19l1.3-5.5L4.5 10l5.6-1.4z" strokeLinejoin="round" />
+                    </svg>
+                    Conte interactif
+                  </Link>
+                )}
                 <p className="sxp__hint">
                   La carte suit la narration ; le scroll change de chapitre.
                 </p>

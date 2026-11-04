@@ -1,0 +1,540 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   PAGE CONTE — Livre ouvert (design Pencil)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.conte-page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: radial-gradient(ellipse 60% 50% at 50% 145%, 
+    rgba(196, 85, 45, 0.35) 0%,
+    rgba(224, 168, 75, 0.15) 30%,
+    rgba(14, 11, 9, 0) 60%),
+    #0E0B09;
+  color: #F2E6D3;
+  padding: 0;
+}
+
+/* ── Barre navigation ─────────────────────────────────────────────────────── */
+.conte-nav {
+  width: 100%;
+  max-width: 1440px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px 56px;
+}
+
+.nav-back {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #F2E6D3;
+  text-decoration: none;
+  font-family: var(--font-tale-ui), system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  transition: opacity 0.3s;
+}
+
+.nav-back:hover {
+  opacity: 0.7;
+}
+
+.nav-wordmark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  color: #E8743B;
+}
+
+.nav-title {
+  font-family: var(--font-tale-display), Georgia, serif;
+  font-size: 20px;
+  color: #F2E6D3;
+}
+
+.nav-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.nav-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(242, 230, 211, 0.2);
+  background: transparent;
+  display: grid;
+  place-items: center;
+  color: #F2E6D3;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.nav-btn:hover {
+  border-color: rgba(242, 230, 211, 0.5);
+  background: rgba(242, 230, 211, 0.05);
+}
+
+/* ── Scène livre ──────────────────────────────────────────────────────────── */
+.conte-scene {
+  position: relative;
+  width: 1440px;
+  height: 660px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.livre-double {
+  position: relative;
+  width: 1180px;
+  height: 640px;
+  border-radius: 44px;
+  overflow: hidden;
+  display: flex;
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.8);
+}
+
+.page-gauche {
+  width: 590px;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.page-droite {
+  width: 590px;
+  height: 100%;
+  background: linear-gradient(135deg, #EBC2A8 0%, #E0B59A 100%);
+  padding: 64px 68px 56px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  position: relative;
+}
+
+.livre-pli {
+  position: absolute;
+  left: 560px;
+  top: 0;
+  width: 60px;
+  height: 640px;
+  background: linear-gradient(90deg,
+    rgba(0,0,0,0) 0%,
+    rgba(0,0,0,0.18) 48%,
+    rgba(255,255,255,0.14) 52%,
+    rgba(0,0,0,0) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.page-nav {
+  position: absolute;
+  top: 296px;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  border: 1px solid rgba(242, 230, 211, 0.2);
+  background: transparent;
+  display: grid;
+  place-items: center;
+  color: #F2E6D3;
+  cursor: pointer;
+  transition: all 0.3s;
+  z-index: 3;
+}
+
+.page-nav:hover {
+  background: rgba(242, 230, 211, 0.1);
+  border-color: rgba(242, 230, 211, 0.4);
+}
+
+.page-nav.prev {
+  left: 48px;
+}
+
+.page-nav.next {
+  right: 48px;
+}
+
+/* ── Contenu page droite ───────────────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.page-numero {
+  font-family: var(--font-tale-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: #C4552D;
+  text-transform: uppercase;
+}
+
+.page-titre {
+  margin: 0;
+  font-family: var(--font-tale-display), Georgia, serif;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #2A1D14;
+}
+
+.page-texte {
+  margin: 0;
+  font-family: var(--font-tale-ui), system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.7;
+  color: #2A1D14;
+  flex: 1;
+}
+
+.page-ecouter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font-family: var(--font-tale-ui), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  background: #C4552D;
+  color: #FFF;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: all 0.3s;
+}
+
+.page-ecouter:hover {
+  background: #E8743B;
+  transform: translateY(-1px);
+}
+
+/* ── Lecteur audio ─────────────────────────────────────────────────────────── */
+.conte-lecteur {
+  width: 1180px;
+  background: rgba(26, 20, 15, 0.8);
+  backdrop-filter: blur(30px);
+  border-radius: 999px;
+  border: 1px solid rgba(242, 230, 211, 0.12);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 28px 16px 16px;
+}
+
+.lecteur-play {
+  width: 60px;
+  height: 60px;
+  border-radius: 999px;
+  background: #E8743B;
+  border: none;
+  display: grid;
+  place-items: center;
+  color: #0E0B09;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.3s;
+}
+
+.lecteur-play:hover {
+  background: #E0A84B;
+  transform: scale(1.05);
+}
+
+.lecteur-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 250px;
+}
+
+.lecteur-titre {
+  margin: 0;
+  font-family: var(--font-tale-display), Georgia, serif;
+  font-size: 17px;
+  color: #F2E6D3;
+}
+
+.lecteur-lieu {
+  margin: 0;
+  font-family: var(--font-tale-ui), system-ui, sans-serif;
+  font-size: 13px;
+  color: rgba(242, 230, 211, 0.7);
+}
+
+.lecteur-chapitres {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chapitres-barres {
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+  height: 40px;
+}
+
+.chapitre-barre {
+  flex: 1;
+  height: 50%;
+  background: rgba(242, 230, 211, 0.3);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.chapitre-barre:hover {
+  background: rgba(242, 230, 211, 0.5);
+}
+
+.chapitre-barre.active {
+  background: #E8743B;
+  height: 100%;
+}
+
+.chapitres-temps {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-tale-mono), monospace;
+  font-size: 11px;
+  color: rgba(242, 230, 211, 0.5);
+}
+
+.lecteur-voix {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.voix-select {
+  display: flex;
+  gap: 2px;
+  background: rgba(242, 230, 211, 0.08);
+  border-radius: 999px;
+  padding: 3px;
+}
+
+.voix-btn {
+  padding: 8px 16px;
+  font-family: var(--font-tale-ui), system-ui, sans-serif;
+  font-size: 13px;
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  color: rgba(242, 230, 211, 0.6);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.voix-btn.active {
+  background: #F2E6D3;
+  color: #0E0B09;
+  font-weight: 600;
+}
+
+.voix-aide {
+  font-family: var(--font-tale-ui), system-ui, sans-serif;
+  font-size: 11px;
+  color: rgba(242, 230, 211, 0.5);
+}
+
+.lecteur-vitesse {
+  border-radius: 999px;
+  border: 1px solid rgba(242, 230, 211, 0.2);
+  padding: 8px 12px;
+  font-family: var(--font-tale-mono), monospace;
+  font-size: 13px;
+  color: #F2E6D3;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.lecteur-vitesse:hover {
+  border-color: rgba(242, 230, 211, 0.4);
+  background: rgba(242, 230, 211, 0.05);
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+@media (max-width: 1400px) {
+  .conte-scene {
+    width: 100%;
+    padding: 0 20px;
+  }
+  
+  .livre-double {
+    width: 100%;
+    max-width: 1180px;
+  }
+  
+  .conte-lecteur {
+    width: 100%;
+    max-width: 1180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .conte-nav {
+    padding: 20px 24px;
+  }
+  
+  .nav-actions {
+    display: none;
+  }
+  
+  .livre-double {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .page-gauche,
+  .page-droite {
+    width: 100%;
+  }
+  
+  .page-gauche {
+    height: 400px;
+  }
+  
+  .page-nav {
+    display: none;
+  }
+  
+  .conte-lecteur {
+    flex-wrap: wrap;
+    border-radius: 24px;
+  }
+}
+
+
+/* ── Scène interactive SVG ─────────────────────────────────────────────────── */
+.page-gauche-interactive {
+  width: 590px;
+  height: 100%;
+  background: #2B3A67;
+  position: relative;
+  overflow: hidden;
+}
+
+.interactive-stage {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.interactive-stage .actor {
+  transform-box: view-box;
+  transition: transform 900ms cubic-bezier(0.65, 0, 0.35, 1),
+              opacity 900ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.interactive-stage .layer {
+  transition: opacity 1400ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.bob {
+  animation: bob 0.36s cubic-bezier(0.65, 0, 0.35, 1) infinite alternate;
+  animation-play-state: paused;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+.galloping .bob {
+  animation-play-state: running;
+}
+
+@keyframes bob {
+  from {
+    transform: translateY(0) rotate(-1deg);
+  }
+  to {
+    transform: translateY(-14px) rotate(1.5deg);
+  }
+}
+
+/* Texte de guidage sur la scène SVG */
+.scene-instruction {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  z-index: 10;
+  animation: instruction-pulse 2s ease-in-out infinite;
+}
+
+@keyframes instruction-pulse {
+  0%, 100% { opacity: 0.9; transform: translateX(-50%) translateY(0); }
+  50% { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+}
+
+.scene-instruction p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Animations pour les SVG interactifs */
+@keyframes gentle-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes bob-fast {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  25% { transform: translateY(-12px) translateX(3px); }
+  50% { transform: translateY(0) translateX(0); }
+  75% { transform: translateY(-12px) translateX(-3px); }
+}
+
+@keyframes gentle-sway {
+  0%, 100% { transform: rotate(0deg) translateX(0); }
+  50% { transform: rotate(1deg) translateX(2px); }
+}
+
+/* Acteurs interactifs */
+.interactive-actor {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.interactive-actor:hover {
+  filter: brightness(1.1);
+  transform: scale(1.02);
+}
+
+.bob {
+  animation: gentle-bob 3s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+.bob-fast {
+  animation: bob-fast 0.6s ease-in-out infinite;
+  transform-origin: center bottom;
+}

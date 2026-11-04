@@ -1,11 +1,10 @@
 /**
- * Page Atlas (Server Component).
- * Le corpus est validé côté serveur (frontière de confiance de `stories.ts`)
- * puis injecté — sérialisable — dans l'expérience client.
+ * Page d'accueil — La veillée interactive
  */
-import AtlasExperience from '@/components/AtlasExperience';
+import HomeHero from '@/components/HomeHero';
 import { stories } from '@/data/stories';
+import './home.css';
 
-export default function AtlasPage() {
-  return <AtlasExperience stories={stories} />;
+export default function HomePage() {
+  return <HomeHero stories={stories} />;
 }
