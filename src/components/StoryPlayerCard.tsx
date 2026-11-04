@@ -1,24 +1,21 @@
 'use client';
 
 /**
- * StoryPlayerCard — mini-lecteur flottant de la maquette (design « atlas »).
- * Coquille honnête : la lecture audio arrive à l'Étape 3, mais tout ce qui
- * s'affiche est déjà réel et interactif —
- *  • scruber « waveform » segmenté par CHAPITRES du corpus (clic = chapitre) ;
- *  • bascule de LANGUE (met à jour durée et grille de timecodes) ;
- *  • numérotation « Chapitre N sur X · position / durée ».
- * Les barres sont générées de façon déterministe (PRNG semé par l'id du récit) :
- * stables d'un rendu à l'autre, jamais de scintillement.
+ * StoryPlayerCard — lecteur flottant (Étape 3 · 2/2).
+ * Branché sur le moteur useMultilingualAudio :
+ *  • lecture / pause vivantes, position réelle sur la grille de référence ;
+ *  • scruber « waveform » segmenté par chapitres : la tête de lecture suit
+ *    currentTime, un clic (chapitre) seek + fait voler la caméra (callback) ;
+ *  • chips de langue → bascule EN DIRECT, position narratif conservée ;
+ *  • phrase sous-titrée active affichée en temps réel (cue horodaté) ;
+ *  • chaîne de repli + message d'erreur propre si les masters manquent.
+ * Les barres sont générées de façon déterministe (PRNG semé par l'id du récit).
  */
 import { useMemo } from 'react';
 
 import { formatDuration } from './Map3D';
-import {
-  LANGUAGE_LABELS,
-  type Chapter,
-  type LanguageCode,
-  type Story,
-} from '@/types';
+import { useMultilingualAudio } from '@/hooks/useMultilingualAudio';
+import { LANGUAGE_LABELS } from '@/types';
 
 /** PRNG mulberry32 — barres identiques à chaque rendu pour un même récit. */
 function seededBars(seed: string, count: number): number[] {
@@ -43,33 +40,21 @@ function seededBars(seed: string, count: number): number[] {
 const TOTAL_BARS = 56;
 
 export interface StoryPlayerCardProps {
-  story: Story;
-  language: LanguageCode;
-  activeChapterIndex: number;
-  onLanguageChange: (language: LanguageCode) => void;
+  /** Récit lu — changer de récit remet le moteur à zéro dans sa langue par défaut. */
+  story: Parameters<typeof useMultilingualAudio>[0]['story'];
+  /** Chapitre choisi (clic scruber) → la scène carte vole vers son décor. */
   onChapterChange: (chapterIndex: number) => void;
 }
 
-export default function StoryPlayerCard({
-  story,
-  language,
-  activeChapterIndex,
-  onLanguageChange,
-  onChapterChange,
-}: StoryPlayerCardProps) {
-  const track =
-    story.languages.find((t) => t.language === language) ??
-    story.languages.find((t) => t.language === 'fr') ??
-    story.languages[0];
-
-  const totalSeconds = track.durationHint;
-  const activeChapter: Chapter | undefined = story.chapters[activeChapterIndex];
+export default function StoryPlayerCard({ story, onChapterChange }: StoryPlayerCardProps) {
+  const audio = useMultilingualAudio({ story });
+  const totalSeconds = audio.timelineDuration;
 
   /** Segments de barres proportionnels à la durée réelle des chapitres. */
   const segments = useMemo(() => {
     const bars = seededBars(story.id, TOTAL_BARS);
     const weights = story.chapters.map(
-      (c) => Math.max(1, c.audioEnd - c.audioStart),
+      (chapter) => Math.max(1, chapter.audioEnd - chapter.audioStart),
     );
     const totalWeight = weights.reduce((a, b) => a + b, 0);
     let cursor = 0;
@@ -84,59 +69,95 @@ export default function StoryPlayerCard({
     });
   }, [story]);
 
+  const playLabel = audio.isPlaying ? 'Pause' : 'Lecture';
+  const subtitleText = audio.activeSubtitle?.cue.text ?? null;
+  const subtitleKey = `${audio.activeSubtitle?.cue.start ?? 'x'}-${audio.activeSubtitle?.cueLanguage ?? 'x'}`;
+
   return (
-    <section className="player" aria-label={`Mini-lecteur — ${story.title.fr}`}>
+    <section className="player" aria-label={`Lecteur — ${story.title.fr}`}>
       <div className="player__top">
         <button
           type="button"
           className="player__btn"
-          disabled
-          title="Lecture audio multilingue — Étape 3"
-          aria-label="Lecture (disponible à l'Étape 3)"
+          onClick={audio.toggle}
+          disabled={!!audio.error}
+          aria-label={audio.error ? 'Lecture indisponible' : playLabel}
+          title={audio.error ?? playLabel}
         >
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M6 4.5v15l13-7.5-13-7.5z" />
-          </svg>
+          {audio.isPlaying ? (
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style={{ marginLeft: 0 }}>
+              <path d="M7 5h4v14H7zM13 5h4v14h-4z" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M6 4.5v15l13-7.5-13-7.5z" />
+            </svg>
+          )}
         </button>
         <div style={{ minWidth: 0 }}>
           <p className="player__title">{story.title.fr}</p>
           <p className="player__meta">
-            {activeChapter
-              ? `Chapitre ${activeChapterIndex + 1} sur ${story.chapters.length} · ${formatDuration(activeChapter.audioStart)} / ${formatDuration(totalSeconds)}`
+            {audio.activeChapter
+              ? `Chapitre ${audio.activeChapterIndex + 1} sur ${story.chapters.length} · ${formatDuration(audio.currentTime)} / ${formatDuration(totalSeconds)}`
               : `${formatDuration(totalSeconds)}`}
+            {audio.fallbackFrom && (
+              <span title={`Piste « ${audio.fallbackFrom} » indisponible`}>
+                {' '}· piste {audio.effectiveLanguage ? LANGUAGE_LABELS[audio.effectiveLanguage].native : '—'}
+              </span>
+            )}
           </p>
         </div>
-        <div
-          className="player__langs"
-          role="group"
-          aria-label="Langue de la narration"
-        >
-          {story.languages.map((t) => (
+        <div className="player__langs" role="group" aria-label="Langue de la narration">
+          {audio.availableLanguages.map((code) => (
             <button
-              key={t.language}
+              key={code}
               type="button"
-              className={`lang-chip${t.language === language ? ' is-active' : ''}`}
-              onClick={() => onLanguageChange(t.language)}
-              aria-pressed={t.language === language}
+              className={`lang-chip${code === audio.language ? ' is-active' : ''}`}
+              onClick={() => audio.setLanguage(code)}
+              aria-pressed={code === audio.language}
+              title={`Basculer en ${LANGUAGE_LABELS[code].native} — position conservée`}
             >
-              {LANGUAGE_LABELS[t.language].native}
+              {LANGUAGE_LABELS[code].native}
             </button>
           ))}
         </div>
       </div>
 
+      {/* Phrase sous-titrée active (timecodes du corpus, repli fr automatique) */}
+      <p
+        key={subtitleKey}
+        className={`player__subtitle${audio.error ? ' is-error' : ''}`}
+        aria-live="polite"
+      >
+        {audio.error ?? subtitleText ?? '—'}
+      </p>
+
       <div className="player__wave">
         <div className="wave__bars" role="group" aria-label="Chapitres du récit">
+          {/* Voile « déjà écouté » + tête de lecture (grille de référence) */}
+          <span
+            className="wave__played"
+            style={{ width: `${audio.progress * 100}%` }}
+            aria-hidden="true"
+          />
+          <span
+            className="wave__playhead"
+            style={{ left: `${audio.progress * 100}%` }}
+            aria-hidden="true"
+          />
           {segments.map(({ chapter, bars }, index) => (
             <button
               key={chapter.id}
               type="button"
-              className={`wave__chapter${index === activeChapterIndex ? ' is-active' : ''}`}
+              className={`wave__chapter${index === audio.activeChapterIndex ? ' is-active' : ''}`}
               style={{ flexGrow: bars.length }}
-              onClick={() => onChapterChange(index)}
+              onClick={() => {
+                audio.goToChapter(index);
+                onChapterChange(index);
+              }}
               title={`${index + 1}. ${chapter.title.fr} — ${formatDuration(chapter.audioStart)}`}
               aria-label={`Chapitre ${index + 1} : ${chapter.title.fr}`}
-              aria-current={index === activeChapterIndex || undefined}
+              aria-current={index === audio.activeChapterIndex || undefined}
             >
               {bars.map((height, barIndex) => (
                 <span
@@ -152,16 +173,13 @@ export default function StoryPlayerCard({
           {story.chapters.map((chapter, index) => (
             <span
               key={chapter.id}
-              className={`wave__tick${index === activeChapterIndex ? ' is-active' : ''}`}
+              className={`wave__tick${index === audio.activeChapterIndex ? ' is-active' : ''}`}
               style={{ left: `${(chapter.audioStart / totalSeconds) * 100}%` }}
             >
               {formatDuration(chapter.audioStart)}
             </span>
           ))}
-          <span
-            className="wave__tick"
-            style={{ left: '100%', transform: 'translateX(-100%)' }}
-          >
+          <span className="wave__tick" style={{ left: '100%', transform: 'translateX(-100%)' }}>
             {formatDuration(totalSeconds)}
           </span>
         </div>

@@ -21,19 +21,19 @@
     "languages": [
       {
         "language": "fr",
-        "src": "/audio/stories/yennenga/yennenga-fr.mp3",
+        "src": "/audio/stories/yennenga-mere-des-moose/yennenga-mere-des-moose-fr.wav",
         "durationHint": 312,
         "narrator": "Aïcha Ouédraogo (voix de démonstration)",
         "fallbacks": [],
-        "format": "mp3"
+        "format": "wav"
       },
       {
         "language": "moore",
-        "src": "/audio/stories/yennenga/yennenga-moore.mp3",
+        "src": "/audio/stories/yennenga-mere-des-moose/yennenga-mere-des-moose-moore.wav",
         "durationHint": 318,
         "narrator": "Souleymane Kaboré (voix de démonstration)",
         "fallbacks": ["fr"],
-        "format": "mp3"
+        "format": "wav"
       }
     ],
     "chapters": [
@@ -195,27 +195,27 @@
     "languages": [
       {
         "language": "fr",
-        "src": "/audio/stories/le-lievre-et-la-tortue/le-lievre-et-la-tortue-fr.mp3",
+        "src": "/audio/stories/le-lievre-et-la-tortue/le-lievre-et-la-tortue-fr.wav",
         "durationHint": 252,
         "narrator": "Fatimata Sawadogo (voix de démonstration)",
         "fallbacks": [],
-        "format": "mp3"
+        "format": "wav"
       },
       {
         "language": "moore",
-        "src": "/audio/stories/le-lievre-et-la-tortue/le-lievre-et-la-tortue-moore.mp3",
+        "src": "/audio/stories/le-lievre-et-la-tortue/le-lievre-et-la-tortue-moore.wav",
         "durationHint": 261,
         "narrator": "Boureima Compaoré (voix de démonstration)",
         "fallbacks": ["fr"],
-        "format": "mp3"
+        "format": "wav"
       },
       {
         "language": "fulfulde",
-        "src": "/audio/stories/le-lievre-et-la-tortue/le-lievre-et-la-tortue-fulfulde.mp3",
+        "src": "/audio/stories/le-lievre-et-la-tortue/le-lievre-et-la-tortue-fulfulde.wav",
         "durationHint": 258,
         "narrator": "Halidou Barry (voix de démonstration)",
         "fallbacks": ["fr"],
-        "format": "mp3"
+        "format": "wav"
       }
     ],
     "chapters": [
@@ -343,19 +343,19 @@
     "languages": [
       {
         "language": "fr",
-        "src": "/audio/stories/les-ruines-de-lorepeni/les-ruines-de-lorepeni-fr.mp3",
+        "src": "/audio/stories/les-ruines-de-lorepeni/les-ruines-de-lorepeni-fr.wav",
         "durationHint": 286,
         "narrator": "Jean-Baptiste Tah (voix de démonstration)",
         "fallbacks": [],
-        "format": "mp3"
+        "format": "wav"
       },
       {
         "language": "dioula",
-        "src": "/audio/stories/les-ruines-de-lorepeni/les-ruines-de-lorepeni-dioula.mp3",
+        "src": "/audio/stories/les-ruines-de-lorepeni/les-ruines-de-lorepeni-dioula.wav",
         "durationHint": 293,
         "narrator": "Mariam Traoré (voix de démonstration)",
         "fallbacks": ["fr"],
-        "format": "mp3"
+        "format": "wav"
       }
     ],
     "chapters": [

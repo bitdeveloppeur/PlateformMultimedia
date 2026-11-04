@@ -2,36 +2,36 @@
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- *  useMultilingualAudio — moteur audio multilingue (Étape 3 · 1/2)
+ *  useMultilingualAudio — moteur audio multilingue (Étape 3)
  * ─────────────────────────────────────────────────────────────────────────────
  *  • Lecture Howler.js (Web Audio) des pistes du corpus, une par langue
  *    (moore, dioula, fulfulde, fr…), avec chaîne de repli par piste.
  *
  *  • Bascule de langue EN DIRECT : la position narratif est portée par la
- *    grille de référence « fr » du corpus (timecodes des chapitres et des
- *    cues). Au changement de langue, la nouvelle piste est seekée au prorata
- *    de sa durée (`t_langue = t_réf × durée_langue / durée_réf`) et la lecture
- *    reprend en crossfade — PAS de retour à zéro, PAS de perte de seconde.
+ *    grille de référence « fr » du corpus. Au changement de langue, la
+ *    nouvelle piste est seekée au prorata de sa durée et la lecture reprend
+ *    en crossfade — PAS de retour à zéro, PAS de perte de seconde.
  *
- *  • Synchronisation temps réel : à chaque tick (~20 Hz), expose le chapitre
- *    actif et la phrase sous-titrée courante, résolus par timecodes purs
- *    (src/lib/audio-timeline.ts, testés sous Node).
+ *  • Synchronisation temps réel : chapitre actif + phrase sous-titrée
+ *    résolus par timecodes purs (src/lib/audio-timeline.ts, testés Node),
+ *    rafraîchis à ~20 Hz (rAF + interval de secours en onglet caché).
  *
- *  • Résilience démo : fichiers audio non fournis → chaîne de repli puis état
- *    d'erreur propre (`error`), sans jamais casser l'interface. Le hook est
- *    « drop-in » dès que les vrais masters sont publiés dans /audio.
+ *  • Robustesse :
+ *      – cache de Howls AU NIVEAU MODULE (clé « récit::langue ») avec
+ *        compteur de montages : survit aux remonts du composant, purge
+ *        réelle quand le dernier consommateur d'un récit disparaît ;
+ *      – préchargement fetch() → blob local (l'XHR interne de Howler peut
+ *        être intercepté par certains environnements embarqués) ;
+ *      – Howler importé dynamiquement (module touchant `window` : SSG-safe) ;
+ *      – onplayerror → retry officiel sur « unlock » (autoplay 1er geste) ;
+ *      – erreurs de chargement → chaîne de repli → état d'erreur propre.
  *
- *  Usage :
- *    const audio = useMultilingualAudio({ story });
- *    audio.play();
- *    audio.setLanguage('moore');   // bascule en direct, position conservée
- *    audio.activeChapter           // chapitre courant (grille de référence)
- *    audio.activeSubtitle?.cue.text // phrase sous-titrée courante
+ *  Debug : `window.__VDF_DEBUG__ = true` avant interaction active la trace.
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Howl } from 'howler';
+import type { Howl } from 'howler';
 
 import {
   activeCueAt,
@@ -78,7 +78,7 @@ export interface MultilingualAudioState {
   /** Chapitre actif résolu par timecodes (`null` avant le début). */
   activeChapter: Chapter | null;
   activeChapterIndex: number;
-  /** Phrase sous-titrée active (cue + langue effective du cue). */
+  /** Cue sous-titré actif (+ langue effective du cue, repli fr inclus). */
   activeSubtitle: ReturnType<typeof activeCueAt>;
   /** Repli effectué, ex. « moore » demandé → piste « fr » chargée. */
   fallbackFrom: LanguageCode | null;
@@ -89,7 +89,6 @@ export interface MultilingualAudioState {
 }
 
 export interface MultilingualAudioControls {
-  /** Lance la lecture (geste utilisateur requis par les navigateurs). */
   play(): Promise<void>;
   pause(): void;
   toggle(): void;
@@ -97,13 +96,8 @@ export interface MultilingualAudioControls {
   seek(referenceTime: number): void;
   /** Saut relatif (± secondes, grille de référence). */
   skip(deltaSeconds: number): void;
-  /**
-   * Bascule de langue EN DIRECT : conserve la position narratif exacte
-   * (mapping proportionnel) et reprend la lecture avec un crossfade doux
-   * si le récit était en cours.
-   */
+  /** Bascule de langue en direct, position narratif conservée. */
   setLanguage(language: LanguageCode): void;
-  /** Volume maître 0–1 (appliqué à toutes les pistes en cache). */
   setVolume(volume: number): void;
   mute(muted: boolean): void;
   toggleMute(): void;
@@ -118,6 +112,8 @@ export type MultilingualAudio = MultilingualAudioState & MultilingualAudioContro
 interface HowlCacheEntry {
   howl: Howl;
   track: AudioTrack;
+  /** URL blob locale — révoquée à la purge du cache. */
+  objectUrl: string;
   /** Durée réelle dès que connue, sinon le `durationHint` du corpus. */
   duration(): number;
   /** `true` si la piste a pu être chargée. */
@@ -125,6 +121,40 @@ interface HowlCacheEntry {
 }
 
 const TIME_EPSILON = 0.05; // seconde — plancher de mise à jour de l'état temps.
+
+/** Trace de diagnostic (activée par window.__VDF_DEBUG__ = true). */
+const trace = (where: string, data?: Record<string, unknown>) => {
+  if (typeof window !== 'undefined' && (window as { __VDF_DEBUG__?: boolean }).__VDF_DEBUG__) {
+    ((window as { __VDF_TRACE?: unknown[] }).__VDF_TRACE ??= []).push({
+      t: Math.round(performance.now()),
+      where,
+      ...data,
+    });
+  }
+};
+
+/**
+ * ÉTAT PARTAGÉ ANCRÉ SUR globalThis — clé « récit::langue ».
+ * Le bundler peut évaluer ce module en plusieurs exemplaires (chunks) ; en
+ * ancrant cache et compteur sur globalThis, UNE SEULE instance existe quoi
+ * qu'il arrive : les Howls et blobs sont partagés, purgés quand le dernier
+ * consommateur d'un récit disparaît (compteur de montages).
+ */
+interface AudioRuntime {
+  cache: Map<string, HowlCacheEntry>;
+  pending: Map<string, Promise<HowlCacheEntry>>;
+  mountCounts: Map<string, number>;
+  howlCtor: (new (options: object) => Howl) | null;
+}
+const audioRuntime: AudioRuntime = ((globalThis as { __VDF_AUDIO__?: AudioRuntime }).__VDF_AUDIO__ ??= {
+  cache: new Map(),
+  pending: new Map(),
+  mountCounts: new Map(),
+  howlCtor: null,
+});
+const { cache: HOWL_CACHE, pending: HOWL_PENDING, mountCounts: MOUNT_COUNTS } = audioRuntime;
+
+const cacheKey = (storyId: string, language: LanguageCode) => `${storyId}::${language}`;
 
 /* ── Hook ──────────────────────────────────────────────────────────────────── */
 
@@ -134,6 +164,8 @@ export function useMultilingualAudio({
   volume: initialVolume = 1,
   crossfadeMs = 180,
 }: UseMultilingualAudioOptions): MultilingualAudio {
+  const instanceIdRef = useRef(Math.random().toString(36).slice(2, 6));
+
   /* État exposé */
   const [language, setLanguageState] = useState<LanguageCode>(
     initialLanguage ?? story.defaultLanguage,
@@ -148,10 +180,10 @@ export function useMultilingualAudio({
   const [muted, setMuted] = useState(false);
   const [volume, setVolumeState] = useState(initialVolume);
 
-  /* Références « latest » (lisibles dans les callbacks Howler stables) */
-  const cacheRef = useRef<Map<LanguageCode, HowlCacheEntry>>(new Map());
+  /* Références « latest » (lisibles dans les callbacks stables) */
   const currentRef = useRef<HowlCacheEntry | null>(null);
   const rafRef = useRef<number | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const playingRef = useRef(false);
   const narrationRef = useRef(0); // position sur la grille de référence
   const durationRef = useRef(0); // durée de la piste courante
@@ -167,86 +199,171 @@ export function useMultilingualAudio({
   languageRef.current = language;
   crossfadeRef.current = crossfadeMs;
 
-  /* ── Boucle temps : lecture ~20 Hz de la position réelle du Howl ────────── */
+  /* ── Boucle temps : lecture ~20 Hz de la position réelle ─────────────────── */
 
   const stopTicking = useCallback(() => {
     if (rafRef.current !== null) {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
     }
+    if (intervalRef.current !== null) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }, []);
+
+  const readPosition = useCallback(() => {
+    const entry = currentRef.current;
+    if (!entry) return;
+    const seconds = entry.howl.seek() as number;
+    setTrackTime((previous) =>
+      Math.abs(previous - seconds) >= TIME_EPSILON ? seconds : previous,
+    );
+    narrationRef.current = trackToReference(
+      seconds,
+      refDurationRef.current,
+      durationRef.current,
+    );
   }, []);
 
   const startTicking = useCallback(() => {
     if (rafRef.current !== null) return;
     const loop = () => {
-      const entry = currentRef.current;
-      if (entry) {
-        const seconds = entry.howl.seek() as number;
-        setTrackTime((previous) =>
-          Math.abs(previous - seconds) >= TIME_EPSILON ? seconds : previous,
-        );
-        narrationRef.current = trackToReference(
-          seconds,
-          refDurationRef.current,
-          durationRef.current,
-        );
-      }
+      readPosition();
       rafRef.current = requestAnimationFrame(loop);
     };
     rafRef.current = requestAnimationFrame(loop);
-  }, []);
+    intervalRef.current = setInterval(readPosition, 250);
+  }, [readPosition]);
 
-  /* ── Chargement piste + chaîne de repli ────────────────────────────────── */
+  /* ── Création / récupération d'une piste (cache module) ──────────────────── */
 
-  const getOrCreateEntry = useCallback((track: AudioTrack): HowlCacheEntry => {
-    const cached = cacheRef.current.get(track.language);
-    if (cached) return cached;
+  const getOrCreateEntry = useCallback(
+    (forStory: Story, track: AudioTrack): Promise<HowlCacheEntry> => {
+      const key = cacheKey(forStory.id, track.language);
+      const cached = HOWL_CACHE.get(key);
+      if (cached) {
+        trace('getOrCreate:cache-hit', { key, inst: instanceIdRef.current });
+        return Promise.resolve(cached);
+      }
+      const pending = HOWL_PENDING.get(key);
+      if (pending) {
+        trace('getOrCreate:pending-hit', { key, inst: instanceIdRef.current });
+        return pending;
+      }
+      trace('getOrCreate:création', { key, inst: instanceIdRef.current });
 
-    let entry!: HowlCacheEntry;
-    const loaded = new Promise<boolean>((resolve) => {
-      const howl = new Howl({
-        src: [track.src],
-        format: [track.format],
-        html5: false, // Web Audio : seek précis pour la synchro sous-titres.
-        volume: volumeRef.current,
-        mute: mutedRef.current,
-        onload: () => resolve(true),
-        onloaderror: () => resolve(false),
-        onplay: () => {
-          playingRef.current = true;
-          setIsPlaying(true);
-          startTicking();
-        },
-        onpause: () => {
-          playingRef.current = false;
-          setIsPlaying(false);
-          stopTicking();
-        },
-        onstop: () => {
-          playingRef.current = false;
-          setIsPlaying(false);
-          stopTicking();
-        },
-        onend: () => {
-          playingRef.current = false;
-          setIsPlaying(false);
-          stopTicking();
-        },
-        // Blocage d'autoplay mobile : Howler retentera au « unlock ».
-        onplayerror: () => undefined,
-      });
-      entry = {
-        howl,
-        track,
-        duration: () => howl.duration() || track.durationHint,
-        loaded,
-      };
-      if (howl.state() === 'loaded') resolve(true);
-    });
+      const creation = (async (): Promise<HowlCacheEntry> => {
+        /* Howler chargé dynamiquement, côté navigateur uniquement (SSR-safe). */
+        if (!audioRuntime.howlCtor) {
+          audioRuntime.howlCtor = (await import('howler')).Howl as new (options: object) => Howl;
+        }
+        const HowlCtor = audioRuntime.howlCtor;
 
-    cacheRef.current.set(track.language, entry);
-    return entry;
-  }, [startTicking, stopTicking]);
+        /**
+         * Préchargement fetch() → blob local : l'XHR interne de Howler peut
+         * être intercepté par certains environnements embarqués, alors que
+         * fetch() est fiable. Howler consomme ensuite le blob: en Web Audio,
+         * hors réseau — et le futur cache offline (Étape 5) n'aura qu'à
+         * traverser ce fetch.
+         */
+        let objectUrl: string;
+        try {
+          const response = await fetch(track.src);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          objectUrl = URL.createObjectURL(await response.blob());
+          trace('creation:blob-ok', { key, octets: response.headers.get('content-length') });
+        } catch (e) {
+          trace('creation:fetch-fail', { key, err: String(e) });
+          return {
+            howl: new HowlCtor({ src: [''], format: [track.format] }),
+            track,
+            objectUrl: '',
+            duration: () => track.durationHint,
+            loaded: Promise.resolve(false),
+          };
+        }
+
+        /**
+         * Promesse « deferred » : résolue par les callbacks Howler. On ne
+         * référence JAMAIS `loaded` depuis l'intérieur de son propre
+         * exécuteur — l'exécuteur de `new Promise` tourne de façon
+         * synchrone, avant la fin de l'initialisation de la constante
+         * (TDZ : « Cannot access 'loaded' before initialization »).
+         */
+        let resolveLoaded!: (ok: boolean) => void;
+        const loaded = new Promise<boolean>((resolve) => {
+          resolveLoaded = resolve;
+        });
+
+        const howl = new HowlCtor({
+          /** Le blob local préchargé — jamais l'URL réseau. */
+          src: [objectUrl],
+          format: [track.format],
+          html5: false, // Web Audio : seek précis pour la synchro sous-titres.
+          volume: volumeRef.current,
+          mute: mutedRef.current,
+          onload: () => {
+            trace('howl:onload', { key });
+            resolveLoaded(true);
+          },
+          onloaderror: () => {
+            trace('howl:onloaderror', { key });
+            resolveLoaded(false);
+          },
+          onplay: () => {
+            trace('howl:onplay', { key, inst: instanceIdRef.current });
+            playingRef.current = true;
+            setIsPlaying(true);
+            startTicking();
+          },
+          onpause: () => {
+            playingRef.current = false;
+            setIsPlaying(false);
+            stopTicking();
+          },
+          onstop: () => {
+            playingRef.current = false;
+            setIsPlaying(false);
+            stopTicking();
+          },
+          onend: () => {
+            playingRef.current = false;
+            setIsPlaying(false);
+            stopTicking();
+          },
+          /**
+           * Autoplay bloqué (1er geste) : pattern officiel Howler — retenter
+           * la lecture dès le déverrouillage du contexte.
+           */
+          onplayerror: () => {
+            window.Howler?.ctx?.resume?.();
+            howl.once('unlock', () => {
+              if (currentRef.current?.howl === howl) howl.play();
+            });
+          },
+        });
+
+        const entry: HowlCacheEntry = {
+          howl,
+          track,
+          objectUrl,
+          duration: () => howl.duration() || track.durationHint,
+          loaded,
+        };
+        if (howl.state() === 'loaded') resolveLoaded(true);
+
+        HOWL_CACHE.set(key, entry);
+        trace('creation:retour', { key, type: typeof entry, ok: !!entry });
+        return entry;
+      })();
+
+      HOWL_PENDING.set(key, creation);
+      void creation.then(() => HOWL_PENDING.delete(key));
+      return creation;
+    },
+    [startTicking, stopTicking],
+  );
 
   /**
    * Charge la langue demandée ; en cas d'échec (404…), suit la chaîne de
@@ -270,20 +387,32 @@ export function useMultilingualAudio({
       }
       push('fr'); // pivot garanti par la validation du corpus.
 
-      for (const candidate of chain) {
-        const track = trackFor(currentStory, candidate);
-        if (!track) continue;
-        const entry = getOrCreateEntry(track);
-        if (await entry.loaded) return { entry, effective: candidate };
+      try {
+        for (const candidate of chain) {
+          const track = trackFor(currentStory, candidate);
+          if (!track) continue;
+          const entry = await getOrCreateEntry(currentStory, track);
+          trace('ensureLoaded:entrée', { lang: candidate, type: typeof entry, ok: !!entry });
+          if (!entry) continue;
+          if (await entry.loaded) return { entry, effective: candidate };
+        }
+        return null;
+      } catch (e) {
+        /* Jamais d'échec silencieux : une piste cassée devient un état d'erreur. */
+        trace('ensureLoaded:exception', { err: String(e), pile: String((e as Error)?.stack ?? '').slice(0, 400) });
+        return null;
       }
-      return null;
     },
     [getOrCreateEntry],
   );
 
-  /* ── Effet 1 : changement de récit → purge complète et remise à zéro ────── */
+  /* ── Effet 1 : comptage de montages + purge du récit quitté ─────────────── */
 
   useEffect(() => {
+    MOUNT_COUNTS.set(story.id, (MOUNT_COUNTS.get(story.id) ?? 0) + 1);
+    trace('mount', { id: story.id, inst: instanceIdRef.current, count: MOUNT_COUNTS.get(story.id) });
+
+    /* Nouveau récit pour cette instance : remise à zéro de l'état. */
     setLanguageState(story.defaultLanguage);
     setTrackTime(0);
     narrationRef.current = 0;
@@ -295,20 +424,35 @@ export function useMultilingualAudio({
     setError(null);
 
     return () => {
+      const remaining = (MOUNT_COUNTS.get(story.id) ?? 1) - 1;
+      if (remaining <= 0) {
+        MOUNT_COUNTS.delete(story.id);
+        for (const key of [...HOWL_CACHE.keys()]) {
+          if (!key.startsWith(`${story.id}::`)) continue;
+          const entry = HOWL_CACHE.get(key);
+          entry?.howl.unload();
+          if (entry?.objectUrl) URL.revokeObjectURL(entry.objectUrl);
+          HOWL_CACHE.delete(key);
+        }
+        trace('purge-récit', { id: story.id });
+      } else {
+        MOUNT_COUNTS.set(story.id, remaining);
+      }
       stopTicking();
-      cacheRef.current.forEach((entry) => entry.howl.unload());
-      cacheRef.current.clear();
       currentRef.current = null;
       resumeOnLoadRef.current = null;
     };
   }, [story, stopTicking]);
 
-  /* ── Effet 2 : chargement / bascule de langue ──────────────────────────── */
+  /* ── Effet 2 : chargement / bascule de langue ───────────────────────────── */
 
   useEffect(() => {
     let cancelled = false;
+    trace('load-effect', { lang: language, inst: instanceIdRef.current });
     void (async () => {
       const result = await ensureLoaded(language);
+      trace('load-effect:résolu', { lang: language, ok: !!result, cancelled });
+
       if (cancelled) return;
 
       if (!result) {
@@ -362,7 +506,8 @@ export function useMultilingualAudio({
   const referenceDurationSeconds = useMemo(() => referenceDuration(story), [story]);
   refDurationRef.current = referenceDurationSeconds;
 
-  const trackDuration = loadedDuration ?? trackFor(story, language)?.durationHint ?? referenceDurationSeconds;
+  const trackDuration =
+    loadedDuration ?? trackFor(story, language)?.durationHint ?? referenceDurationSeconds;
   durationRef.current = trackDuration;
 
   /** Position sur la grille de référence — c'est LA seconde « préservée ». */
@@ -387,6 +532,7 @@ export function useMultilingualAudio({
   /* ── Contrôles ─────────────────────────────────────────────────────────── */
 
   const play = useCallback(async () => {
+    trace('play', { inst: instanceIdRef.current, aCurrent: !!currentRef.current });
     let entry = currentRef.current;
     if (!entry || entry.howl.state() !== 'loaded') {
       const result = await ensureLoaded(languageRef.current);
@@ -402,7 +548,10 @@ export function useMultilingualAudio({
     if (!entry) return;
 
     /* Fin de récit atteinte : reprise au début (comportement lecteur classique). */
-    if (refDurationRef.current > 0 && narrationRef.current >= refDurationRef.current - TIME_EPSILON) {
+    if (
+      refDurationRef.current > 0 &&
+      narrationRef.current >= refDurationRef.current - TIME_EPSILON
+    ) {
       entry.howl.seek(0);
       setTrackTime(0);
       narrationRef.current = 0;
@@ -445,38 +594,35 @@ export function useMultilingualAudio({
     [seek],
   );
 
-  const setLanguage = useCallback(
-    (next: LanguageCode) => {
-      if (next === languageRef.current) return;
+  const setLanguage = useCallback((next: LanguageCode) => {
+    if (next === languageRef.current) return;
 
-      /* Fondu de sortie de la piste courante, puis pause discrète. */
-      const entry = currentRef.current;
-      const wasPlaying = playingRef.current;
-      resumeOnLoadRef.current = wasPlaying;
-      if (entry && wasPlaying) {
-        entry.howl.fade(entry.howl.volume() as number, 0, crossfadeRef.current);
-        entry.howl.once('fade', () => entry.howl.pause());
-      }
+    /* Fondu de sortie de la piste courante, puis pause discrète. */
+    const entry = currentRef.current;
+    const wasPlaying = playingRef.current;
+    resumeOnLoadRef.current = wasPlaying;
+    if (entry && wasPlaying) {
+      entry.howl.fade(entry.howl.volume() as number, 0, crossfadeRef.current);
+      entry.howl.once('fade', () => entry.howl.pause());
+    }
 
-      /* L'effet [language] charge, repositionne au prorata et reprend. */
-      setLoadedDuration(null);
-      setFallbackFrom(null);
-      setLanguageState(next);
-    },
-    [],
-  );
+    /* L'effet [language] charge, repositionne au prorata et reprend. */
+    setLoadedDuration(null);
+    setFallbackFrom(null);
+    setLanguageState(next);
+  }, []);
 
   const setVolume = useCallback((next: number) => {
     const clamped = Math.min(Math.max(next, 0), 1);
     volumeRef.current = clamped;
     setVolumeState(clamped);
-    cacheRef.current.forEach((entry) => entry.howl.volume(clamped));
+    HOWL_CACHE.forEach((entry) => entry.howl.volume(clamped));
   }, []);
 
   const mute = useCallback((next: boolean) => {
     mutedRef.current = next;
     setMuted(next);
-    cacheRef.current.forEach((entry) => entry.howl.mute(next));
+    HOWL_CACHE.forEach((entry) => entry.howl.mute(next));
   }, []);
 
   const toggleMute = useCallback(() => {

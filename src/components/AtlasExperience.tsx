@@ -38,9 +38,6 @@ export default function AtlasExperience({ stories }: { stories: Story[] }) {
   const mapRef = useRef<Map3DHandle | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<CategoryFilter>('tous');
-  /** Langue choisie par récit (persiste pendant la session de consultation). */
-  const [languageByStory, setLanguageByStory] = useState<Record<string, LanguageCode>>({});
-  const [activeChapterByStory, setActiveChapterByStory] = useState<Record<string, number>>({});
 
   const selected = useMemo(
     () => stories.find((s) => s.id === selectedId) ?? null,
@@ -71,7 +68,6 @@ export default function AtlasExperience({ stories }: { stories: Story[] }) {
   /** Sélection (marqueur ou fiche) → surbrillance + vol caméra narratif. */
   const handleSelect = useCallback((story: Story) => {
     setSelectedId(story.id);
-    setActiveChapterByStory((prev) => ({ ...prev, [story.id]: prev[story.id] ?? 0 }));
     mapRef.current?.flyToStory(cameraViewFromStory(story));
   }, []);
 
@@ -80,15 +76,11 @@ export default function AtlasExperience({ stories }: { stories: Story[] }) {
     mapRef.current?.resetView();
   }, []);
 
-  /** Choix de chapitre (scruber) → vol vers le décor du chapitre. */
+  /** Choix de chapitre (scruber) → vol vers le décor du chapitre.
+   *  La position audio, elle, est portée par le lecteur (useMultilingualAudio). */
   const handleChapterChange = useCallback((story: Story, chapterIndex: number) => {
     setSelectedId(story.id);
-    setActiveChapterByStory((prev) => ({ ...prev, [story.id]: chapterIndex }));
     mapRef.current?.flyToStory(cameraViewFromChapter(story, chapterIndex));
-  }, []);
-
-  const handleLanguageChange = useCallback((storyId: string, language: LanguageCode) => {
-    setLanguageByStory((prev) => ({ ...prev, [storyId]: language }));
   }, []);
 
   return (
@@ -203,13 +195,10 @@ export default function AtlasExperience({ stories }: { stories: Story[] }) {
             onSelectStory={handleSelect}
           />
 
-          {/* Mini-lecteur flottant (maquette) — lecture audio : Étape 3 */}
+          {/* Mini-lecteur flottant — moteur useMultilingualAudio (Étape 3) */}
           {selected && (
             <StoryPlayerCard
               story={selected}
-              language={languageByStory[selected.id] ?? selected.defaultLanguage}
-              activeChapterIndex={activeChapterByStory[selected.id] ?? 0}
-              onLanguageChange={(language) => handleLanguageChange(selected.id, language)}
               onChapterChange={(chapterIndex) => handleChapterChange(selected, chapterIndex)}
             />
           )}
