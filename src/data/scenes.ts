@@ -11,9 +11,6 @@ const book = rawBook as unknown as StageBook;
 if (!book.pages?.length || !book.storyId) {
   throw new Error('scenes/yennenga-mere-des-moose.json — structure invalide');
 }
-if (book.pages.some((page) => page.cover && page.pages !== undefined)) {
-  throw new Error('structure de scène inattendue');
-}
 
 /** Livres interactifs disponibles, indexés par id de récit. */
 export const stageBooks: ReadonlyMap<string, StageBook> = new Map([
