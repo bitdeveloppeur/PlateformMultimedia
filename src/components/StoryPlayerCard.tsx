@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * StoryPlayerCard — lecteur flottant (Étape 3 · 2/2).
+ * StoryPlayerCard — lecteur flottant (Étape 3 · 2/2, injectable en Étape 4).
  * Branché sur le moteur useMultilingualAudio :
  *  • lecture / pause vivantes, position réelle sur la grille de référence ;
  *  • scruber « waveform » segmenté par chapitres : la tête de lecture suit
@@ -9,12 +9,17 @@
  *  • chips de langue → bascule EN DIRECT, position narratif conservée ;
  *  • phrase sous-titrée active affichée en temps réel (cue horodaté) ;
  *  • chaîne de repli + message d'erreur propre si les masters manquent.
+ *  • moteur INJECTABLE (prop `audio`) : la page récit (StoryExperience) crée
+ *    l'unique instance du récit et la partage — le cache module-level de
+ *    Howls interdit deux moteurs sur le même récit. Sans prop, le lecteur
+ *    reste autonome (usage atlas).
  * Les barres sont générées de façon déterministe (PRNG semé par l'id du récit).
  */
 import { useMemo } from 'react';
+import Link from 'next/link';
 
 import { formatDuration } from './Map3D';
-import { useMultilingualAudio } from '@/hooks/useMultilingualAudio';
+import { useMultilingualAudio, type MultilingualAudio } from '@/hooks/useMultilingualAudio';
 import { LANGUAGE_LABELS } from '@/types';
 
 /** PRNG mulberry32 — barres identiques à chaque rendu pour un même récit. */
@@ -44,10 +49,50 @@ export interface StoryPlayerCardProps {
   story: Parameters<typeof useMultilingualAudio>[0]['story'];
   /** Chapitre choisi (clic scruber) → la scène carte vole vers son décor. */
   onChapterChange: (chapterIndex: number) => void;
+  /**
+   * Moteur injecté (page récit) : une SEULE instance de useMultilingualAudio
+   * doit exister par récit — celle du parent. Absente → le lecteur crée la
+   * sienne (usage atlas).
+   */
+  audio?: MultilingualAudio;
+  /** Lien « Ouvrir le récit » vers la page scrollytelling (usage atlas). */
+  openHref?: string;
 }
 
-export default function StoryPlayerCard({ story, onChapterChange }: StoryPlayerCardProps) {
+export default function StoryPlayerCard({
+  story,
+  onChapterChange,
+  audio,
+  openHref,
+}: StoryPlayerCardProps) {
+  /* Moteur injecté → rendu direct ; sinon le wrapper ci-dessous crée le sien.
+   * (Deux moteurs simultanés sur un même récit piloteraient les mêmes Howls.) */
+  if (audio) {
+    return <PlayerView story={story} audio={audio} onChapterChange={onChapterChange} />;
+  }
+  return <SelfDrivenPlayer story={story} onChapterChange={onChapterChange} openHref={openHref} />;
+}
+
+/** Variante autonome (atlas) : possède le moteur audio du récit sélectionné. */
+function SelfDrivenPlayer({
+  story,
+  onChapterChange,
+  openHref,
+}: Omit<StoryPlayerCardProps, 'audio'>) {
   const audio = useMultilingualAudio({ story });
+  return (
+    <PlayerView story={story} audio={audio} onChapterChange={onChapterChange} openHref={openHref} />
+  );
+}
+
+/** Cœur présentationnel — consomme un moteur audio déjà vivant. */
+function PlayerView({
+  story,
+  audio,
+  onChapterChange,
+  openHref,
+}: Required<Pick<StoryPlayerCardProps, 'story' | 'audio' | 'onChapterChange'>> &
+  Pick<StoryPlayerCardProps, 'openHref'>) {
   const totalSeconds = audio.timelineDuration;
 
   /** Segments de barres proportionnels à la durée réelle des chapitres. */
@@ -120,6 +165,14 @@ export default function StoryPlayerCard({ story, onChapterChange }: StoryPlayerC
               {LANGUAGE_LABELS[code].native}
             </button>
           ))}
+          {openHref && (
+            <Link className="player__open" href={openHref} title="Fiche et scrollytelling du récit">
+              Ouvrir le récit
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true">
+                <path d="M7 17 17 7M9 7h8v8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </Link>
+          )}
         </div>
       </div>
 

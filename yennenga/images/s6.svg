@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <!-- S6 — La famille sous l'acacia (SVG de secours, même style plat que l'album) -->
+  <defs>
+    <linearGradient id="ciel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FBE3B5"/>
+      <stop offset=".55" stop-color="#F2C98C"/>
+      <stop offset="1" stop-color="#E8A962"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#ciel)"/>
+  <circle cx="960" cy="200" r="86" fill="#F2B33D"/>
+  <circle cx="960" cy="200" r="120" fill="#F2B33D" opacity="0.25"/>
+  <!-- collines -->
+  <path d="M0 560 Q 220 480 460 552 T 1200 540 L1200 800 L0 800 Z" fill="#D8A85E"/>
+  <path d="M0 640 Q 300 560 620 632 T 1200 620 L1200 800 L0 800 Z" fill="#C99752"/>
+  <rect y="700" width="1200" height="100" fill="#B98544"/>
+  <path d="M0 700 Q 300 684 600 700 T 1200 700 L1200 800 L0 800 Z" fill="#A97A3F"/>
+  <!--soleil -->
+  <!-- case derrière -->
+  <g>
+    <ellipse cx="330" cy="668" rx="120" ry="14" fill="#8C5B2E" opacity=".35"/>
+    <path d="M250 668 v-120 a80 62 0 0 1 160 0 v120 Z" fill="#C98F55"/>
+    <path d="M235 560 q95 -86 190 0 l-16 22 q-79 -62 -158 0 Z" fill="#8C5B2E"/>
+    <rect x="300" y="600" width="42" height="68" rx="20" fill="#7A4A24"/>
+    <path d="M252 612 l24 0 M344 612 l24 0" stroke="#A9713B" stroke-width="6" stroke-linecap="round"/>
+  </g>
+  <!-- acacia -->
+  <g>
+    <path d="M760 700 c -8 -120 6 -190 12 -250 c 3 -26 40 -26 38 2 c -5 62 2 128 -6 248 Z" fill="#7A4A24"/>
+    <path d="M772 470 c -70 -40 -150 -20 -196 8 M772 470 c 60 -46 150 -34 198 0" stroke="#7A4A24" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <g fill="#6B8F4E">
+      <ellipse cx="660" cy="436" rx="120" ry="46"/>
+      <ellipse cx="880" cy="448" rx="130" ry="44"/>
+      <ellipse cx="772" cy="404" rx="150" ry="52"/>
+    </g>
+    <g fill="#7DA35C">
+      <ellipse cx="700" cy="418" rx="70" ry="24"/>
+      <ellipse cx="840" cy="424" rx="66" ry="20"/>
+    </g>
+  </g>
+  <!-- oiseaux -->
+  <g stroke="#7A4A24" stroke-width="5" fill="none" stroke-linecap="round">
+    <path d="M180 180 q14 -14 28 0 q14 -14 28 0"/>
+    <path d="M300 130 q10 -10 20 0 q10 -10 20 0"/>
+  </g>
+  <!-- Yennenga assise -->
+  <g>
+    <ellipse cx="530" cy="712" rx="86" ry="12" fill="#8C5B2E" opacity=".3"/>
+    <path d="M480 712 q -6 -96 50 -100 q 56 4 50 100 Z" fill="#B3452C"/>
+    <path d="M480 712 q -6 -96 50 -100 q 8 8 0 22 q -30 20 -26 78 Z" fill="#D96C3D"/>
+    <circle cx="530" cy="566" r="34" fill="#7A4A2B"/>
+    <path d="M498 556 a34 34 0 0 1 64 0 q6 -26 -10 -34 q-34 -12 -44 8 q-12 8 -10 26Z" fill="#241812"/>
+    <circle cx="8" cy="6" r="3" fill="#E8A93B"/><circle cx="-4" cy="16" r="3" fill="#E8A93B"/>
+    <circle cx="520" cy="562" r="3.4" fill="#241812"/><circle cx="542" cy="562" r="3.4" fill="#241812"/>
+    <path d="M522 574 q8 7 16 0" stroke="#241812" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M496 552 q10 -20 26 -22" stroke="#E8A93B" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M562 588 q22 8 30 26" stroke="#7A4A2B" stroke-width="14" fill="none" stroke-linecap="round"/>
+  </g>
+  <!-- Riale assis -->
+  <g>
+    <ellipse cx="672" cy="712" rx="86" ry="12" fill="#8C5B2E" opacity=".3"/>
+    <path d="M624 712 q -6 -96 48 -100 q 54 4 48 100 Z" fill="#5E7A42"/>
+    <path d="M624 712 q -6 -96 48 -100 q 8 8 0 22 q -28 20 -24 78 Z" fill="#6B8F4E"/>
+    <circle cx="672" cy="568" r="34" fill="#8C5B2E"/>
+    <path d="M640 558 a34 34 0 0 1 64 0 q6 -26 -10 -34 q-34 -12 -44 8 q-12 8 -10 26Z" fill="#171310"/>
+    <circle cx="662" cy="564" r="3.4" fill="#171310"/><circle cx="684" cy="564" r="3.4" fill="#171310"/>
+    <path d="M664 576 q8 7 16 0" stroke="#171310" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M638 554 q10 -20 26 -22" stroke="#171310" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M706 592 q-20 10 -26 28" stroke="#8C5B2E" stroke-width="14" fill="none" stroke-linecap="round"/>
+  </g>
+  <!-- bébé emmailloté, tenu entre eux -->
+  <g>
+    <path d="M586 636 q44 -26 88 0 q10 44 -8 66 q-36 14 -72 0 q-18 -22 -8 -66Z" fill="#E3C766"/>
+    <path d="M586 636 q44 -26 88 0" stroke="#D96C3D" stroke-width="5" fill="none"/>
+    <circle cx="630" cy="622" r="26" fill="#7A4A2B"/>
+    <path d="M606 618 a26 26 0 0 1 48 0 q4 -20 -8 -26 q-26 -8 -34 6 q-9 6 -6 20Z" fill="#241812"/>
+    <circle cx="622" cy="620" r="2.8" fill="#241812"/><circle cx="638" cy="620" r="2.8" fill="#241812"/>
+    <path d="M624 630 q6 5 12 0" stroke="#241812" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <g fill="#C9552F"><circle cx="600" cy="660" r="4"/><circle cx="618" cy="672" r="4"/><circle cx="640" cy="676" r="4"/><circle cx="662" cy="672" r="4"/></g>
+  </g>
+  <!-- herbe -->
+  <g stroke="#8FAF6A" stroke-width="5" stroke-linecap="round" fill="none">
+    <path d="M120 730 q6 -18 0 -30"/><path d="M140 732 q8 -14 4 -28"/><path d="M950 736 q6 -18 0 -30"/>
+    <path d="M972 738 q8 -14 4 -28"/><path d="M1090 726 q6 -18 0 -30"/><path d="M60 748 q6 -16 2 -28"/>
+  </g>
+</svg>

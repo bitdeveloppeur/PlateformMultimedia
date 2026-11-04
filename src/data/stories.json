@@ -1,95 +1,189 @@
 [
   {
     "id": "yennenga-mere-des-moose",
-    "title": { "fr": "Yennenga, la princesse cavalière" },
-    "subtitle": { "fr": "La mère du peuple moaga" },
+    "title": {
+      "fr": "Yennenga, la princesse cavalière"
+    },
+    "subtitle": {
+      "fr": "La mère du peuple moaga"
+    },
     "category": "legende",
     "region": {
       "code": "centre-est",
       "name": "Centre-Est",
       "department": "Koupéla (province de la Kouritenga)",
-      "coordinates": { "latitude": 12.1792, "longitude": -0.3467 }
+      "coordinates": {
+        "latitude": 12.1792,
+        "longitude": -0.3467
+      }
     },
     "era": "Vers le XIVᵉ siècle — tradition orale",
     "people": "Moose — royaumes de Tenkodogo et de Ouagadougou",
     "cover": {
-      "image": "/images/stories/yennenga/cover.svg",
-      "alt": { "fr": "Yennenga au galop sous les étoiles, silhouette dorée sur indigo" },
-      "palette": ["#101B2D", "#C9A227", "#F2E8D5", "#8C3A2B"]
+      "image": "/images/stories/yennenga-mere-des-moose/cover.svg",
+      "alt": {
+        "fr": "Yennenga au galop sous les étoiles, silhouette dorée sur indigo"
+      },
+      "palette": [
+        "#101B2D",
+        "#C9A227",
+        "#F2E8D5",
+        "#8C3A2B"
+      ]
     },
     "defaultLanguage": "fr",
     "languages": [
       {
         "language": "fr",
-        "src": "/audio/stories/yennenga-mere-des-moose/yennenga-mere-des-moose-fr.wav",
+        "src": "/audio/stories/yennenga-mere-des-moose/yennenga-mere-des-moose-fr.mp3",
         "durationHint": 312,
-        "narrator": "Aïcha Ouédraogo (voix de démonstration)",
+        "narrator": "Voix neuronale fr-FR (démonstration)",
         "fallbacks": [],
-        "format": "wav"
+        "format": "mp3"
       },
       {
         "language": "moore",
         "src": "/audio/stories/yennenga-mere-des-moose/yennenga-mere-des-moose-moore.wav",
         "durationHint": 318,
         "narrator": "Souleymane Kaboré (voix de démonstration)",
-        "fallbacks": ["fr"],
+        "fallbacks": [
+          "fr"
+        ],
         "format": "wav"
       }
     ],
     "chapters": [
       {
         "id": "yennenga-ch-01",
-        "title": { "fr": "La cour de Gambaga" },
+        "title": {
+          "fr": "La cour de Gambaga"
+        },
         "audioStart": 0,
         "audioEnd": 52,
         "narration": {
           "fr": "Au royaume de Gambaga, sur le plateau du Nord-Est de l'actuel Ghana, régnait le puissant Nedega. Dans sa cour grandissait Yennenga, sa fille bien-aimée — belle comme le croissant de lune, déjà redoutable à la chasse comme au combat. Les prétendants arrivaient de tout le Sahel ; aucun ne trouva grâce à ses yeux."
         },
         "cues": [
-          { "language": "fr", "start": 0.8, "end": 6.6, "text": "Au royaume de Gambaga régnait le puissant Nedega." },
-          { "language": "fr", "start": 7.0, "end": 13.8, "text": "Sa fille Yennenga grandissait dans la cour," },
-          { "language": "fr", "start": 14.2, "end": 21.4, "text": "belle comme le croissant de lune," },
-          { "language": "fr", "start": 21.8, "end": 29.2, "text": "redoutable à la chasse comme au combat." },
-          { "language": "fr", "start": 29.6, "end": 38.0, "text": "Les prétendants venaient de tout le Sahel :" },
-          { "language": "fr", "start": 38.4, "end": 46.5, "text": "aucun ne trouva grâce à ses yeux." }
+          {
+            "language": "fr",
+            "start": 0.3,
+            "end": 2.4,
+            "text": "Au royaume de Gambaga régnait le puissant Nedega."
+          },
+          {
+            "language": "fr",
+            "start": 2.5,
+            "end": 5,
+            "text": "Sa fille Yennenga grandissait dans la cour,"
+          },
+          {
+            "language": "fr",
+            "start": 5.1,
+            "end": 7.7,
+            "text": "belle comme le croissant de lune,"
+          },
+          {
+            "language": "fr",
+            "start": 7.8,
+            "end": 10.5,
+            "text": "redoutable à la chasse comme au combat."
+          },
+          {
+            "language": "fr",
+            "start": 10.7,
+            "end": 13.7,
+            "text": "Les prétendants venaient de tout le Sahel :"
+          },
+          {
+            "language": "fr",
+            "start": 13.8,
+            "end": 16.7,
+            "text": "aucun ne trouva grâce à ses yeux."
+          }
         ],
         "triggers": [
-          { "type": "canvas:effect", "effect": "starfield", "intensity": 0.6 },
+          {
+            "type": "canvas:effect",
+            "effect": "starfield",
+            "intensity": 0.6
+          },
           {
             "type": "map:flyto",
-            "target": { "latitude": 10.5497, "longitude": -0.3669 },
-            "zoom": 7.5, "pitch": 45, "bearing": 15, "durationMs": 6000
+            "target": {
+              "latitude": 10.5497,
+              "longitude": -0.3669
+            },
+            "zoom": 7.5,
+            "pitch": 45,
+            "bearing": 15,
+            "durationMs": 6000
           },
-          { "type": "audio:ambient", "src": "/audio/ambient/royal-court-loop.mp3", "loop": true, "volume": 0.35, "crossfadeMs": 2500 }
+          {
+            "type": "audio:ambient",
+            "src": "/audio/ambient/royal-court-loop.mp3",
+            "loop": true,
+            "volume": 0.35,
+            "crossfadeMs": 2500
+          }
         ]
       },
       {
         "id": "yennenga-ch-02",
-        "title": { "fr": "La princesse à la lance" },
+        "title": {
+          "fr": "La princesse à la lance"
+        },
         "audioStart": 52,
         "audioEnd": 104,
         "narration": {
           "fr": "À quinze ans, Yennenga commandait un escadron de cavalières et revenait des campagnes du nord couverte d'honneurs. Mais lorsque, l'âge venant, elle demanda à son père la permission d'épouser enfin l'homme de son choix, Nedega répondait toujours : « Pas encore. » La guerrière était devenue trop précieuse pour la cour du Gambaga."
         },
         "cues": [
-          { "language": "fr", "start": 52.4, "end": 58.6, "text": "À quinze ans, Yennenga commandait un escadron de cavalières." },
-          { "language": "fr", "start": 59.0, "end": 66.8, "text": "Elle revenait des campagnes du nord couverte d'honneurs." },
-          { "language": "fr", "start": 67.2, "end": 74.6, "text": "Mais quand elle demanda à choisir un époux," },
-          { "language": "fr", "start": 75.0, "end": 82.9, "text": "Nedega répondait toujours : « Pas encore. »" }
+          {
+            "language": "fr",
+            "start": 52.2,
+            "end": 54.5,
+            "text": "À quinze ans, Yennenga commandait un escadron de cavalières."
+          },
+          {
+            "language": "fr",
+            "start": 54.6,
+            "end": 57.6,
+            "text": "Elle revenait des campagnes du nord couverte d'honneurs."
+          },
+          {
+            "language": "fr",
+            "start": 57.7,
+            "end": 60.5,
+            "text": "Mais quand elle demanda à choisir un époux,"
+          },
+          {
+            "language": "fr",
+            "start": 60.6,
+            "end": 63.6,
+            "text": "Nedega répondait toujours : « Pas encore. »"
+          }
         ],
         "triggers": [
-          { "type": "canvas:effect", "effect": "war-drums", "intensity": 0.8 },
+          {
+            "type": "canvas:effect",
+            "effect": "war-drums",
+            "intensity": 0.8
+          },
           {
             "type": "visual:image",
-            "src": "/images/stories/yennenga/guerriere.svg",
-            "alt": { "fr": "Yennenga en armes, lance au poing, silhouette dorée" },
+            "src": "/images/stories/yennenga-mere-des-moose/guerriere.svg",
+            "alt": {
+              "fr": "Yennenga en armes, lance au poing, silhouette dorée"
+            },
             "treatment": "ken-burns"
           }
         ]
       },
       {
         "id": "yennenga-ch-03",
-        "title": { "fr": "La fuite au galop" },
+        "title": {
+          "fr": "La fuite au galop"
+        },
         "audioStart": 104,
         "audioEnd": 160,
         "narration": {
@@ -98,16 +192,33 @@
         "triggers": [
           {
             "type": "map:flyto",
-            "target": { "latitude": 12.05, "longitude": -0.95 },
-            "zoom": 8.2, "pitch": 50, "bearing": -10, "durationMs": 7500
+            "target": {
+              "latitude": 12.05,
+              "longitude": -0.95
+            },
+            "zoom": 8.2,
+            "pitch": 50,
+            "bearing": -10,
+            "durationMs": 7500
           },
-          { "type": "canvas:effect", "effect": "savanna-wind", "intensity": 0.7 },
-          { "type": "audio:ambient", "src": "/audio/ambient/galop-nuit-loop.mp3", "volume": 0.3, "crossfadeMs": 2000 }
+          {
+            "type": "canvas:effect",
+            "effect": "savanna-wind",
+            "intensity": 0.7
+          },
+          {
+            "type": "audio:ambient",
+            "src": "/audio/ambient/galop-nuit-loop.mp3",
+            "volume": 0.3,
+            "crossfadeMs": 2000
+          }
         ]
       },
       {
         "id": "yennenga-ch-04",
-        "title": { "fr": "Le campement de Riale" },
+        "title": {
+          "fr": "Le campement de Riale"
+        },
         "audioStart": 160,
         "audioEnd": 214,
         "narration": {
@@ -117,15 +228,26 @@
           {
             "type": "map:marker",
             "kind": "stallion",
-            "at": { "latitude": 12.1792, "longitude": -0.3467 },
-            "label": { "fr": "Le campement de Riale" }
+            "at": {
+              "latitude": 12.1792,
+              "longitude": -0.3467
+            },
+            "label": {
+              "fr": "Le campement de Riale"
+            }
           },
-          { "type": "canvas:effect", "effect": "fireflies", "intensity": 0.5 }
+          {
+            "type": "canvas:effect",
+            "effect": "fireflies",
+            "intensity": 0.5
+          }
         ]
       },
       {
         "id": "yennenga-ch-05",
-        "title": { "fr": "Tenkodogo, la première pierre" },
+        "title": {
+          "fr": "Tenkodogo, la première pierre"
+        },
         "audioStart": 214,
         "audioEnd": 268,
         "narration": {
@@ -134,31 +256,50 @@
         "triggers": [
           {
             "type": "map:flyto",
-            "target": { "latitude": 11.7833, "longitude": -0.2833 },
-            "zoom": 10.5, "pitch": 55, "bearing": 20, "durationMs": 8500
+            "target": {
+              "latitude": 11.7833,
+              "longitude": -0.2833
+            },
+            "zoom": 10.5,
+            "pitch": 55,
+            "bearing": 20,
+            "durationMs": 8500
           },
           {
             "type": "map:marker",
             "kind": "drum",
-            "at": { "latitude": 11.7833, "longitude": -0.2833 },
-            "label": { "fr": "Tenkodogo, première capitale moaga" }
+            "at": {
+              "latitude": 11.7833,
+              "longitude": -0.2833
+            },
+            "label": {
+              "fr": "Tenkodogo, première capitale moaga"
+            }
           }
         ]
       },
       {
         "id": "yennenga-ch-06",
-        "title": { "fr": "L'étalon d'un peuple" },
+        "title": {
+          "fr": "L'étalon d'un peuple"
+        },
         "audioStart": 268,
         "audioEnd": 312,
         "narration": {
           "fr": "De Tenkodogo naquirent les autres royaumes : Ouagadougou, Yatenga, Fada N'gourma… l'ensemble des Moose, le « Faso ». La princesse cavalière était devenue la mère d'un peuple. Et aujourd'hui encore, lorsque le FESPACO décerne son Étalon d'or ou que la foule acclame les Étalons du Burkina, c'est à Yennenga que le pays rend hommage."
         },
         "triggers": [
-          { "type": "canvas:effect", "effect": "golden-dust", "intensity": 0.8 },
+          {
+            "type": "canvas:effect",
+            "effect": "golden-dust",
+            "intensity": 0.8
+          },
           {
             "type": "visual:image",
-            "src": "/images/stories/yennenga/etalon-d-or.svg",
-            "alt": { "fr": "L'Étalon d'or du FESPACO, hommage à Yennenga" },
+            "src": "/images/stories/yennenga-mere-des-moose/etalon-d-or.svg",
+            "alt": {
+              "fr": "L'Étalon d'or du FESPACO, hommage à Yennenga"
+            },
             "treatment": "fade"
           }
         ]
@@ -175,38 +316,54 @@
   },
   {
     "id": "le-lievre-et-la-tortue",
-    "title": { "fr": "Le Lièvre et la Tortue" },
-    "subtitle": { "fr": "Comment la lenteur gagna la course du clair de lune" },
+    "title": {
+      "fr": "Le Lièvre et la Tortue"
+    },
+    "subtitle": {
+      "fr": "Comment la lenteur gagna la course du clair de lune"
+    },
     "category": "conte",
     "region": {
       "code": "plateau-central",
       "name": "Plateau-Central",
       "department": "Ziniaré & Manga (province de l'Oubritenga)",
-      "coordinates": { "latitude": 12.5836, "longitude": -1.2836 }
+      "coordinates": {
+        "latitude": 12.5836,
+        "longitude": -1.2836
+      }
     },
     "era": "Répertoire oral du plateau — intemporel",
     "people": "Moose du plateau (Oubritenga)",
     "cover": {
       "image": "/images/stories/le-lievre-et-la-tortue/cover.svg",
-      "alt": { "fr": "Grenier à mil et clair de lune sur le plateau moaga" },
-      "palette": ["#0C1626", "#C7D3E0", "#C96F4A", "#F5EFE0"]
+      "alt": {
+        "fr": "Grenier à mil et clair de lune sur le plateau moaga"
+      },
+      "palette": [
+        "#0C1626",
+        "#C7D3E0",
+        "#C96F4A",
+        "#F5EFE0"
+      ]
     },
     "defaultLanguage": "fr",
     "languages": [
       {
         "language": "fr",
-        "src": "/audio/stories/le-lievre-et-la-tortue/le-lievre-et-la-tortue-fr.wav",
+        "src": "/audio/stories/le-lievre-et-la-tortue/le-lievre-et-la-tortue-fr.mp3",
         "durationHint": 252,
-        "narrator": "Fatimata Sawadogo (voix de démonstration)",
+        "narrator": "Voix neuronale fr-FR (démonstration)",
         "fallbacks": [],
-        "format": "wav"
+        "format": "mp3"
       },
       {
         "language": "moore",
         "src": "/audio/stories/le-lievre-et-la-tortue/le-lievre-et-la-tortue-moore.wav",
         "durationHint": 261,
         "narrator": "Boureima Compaoré (voix de démonstration)",
-        "fallbacks": ["fr"],
+        "fallbacks": [
+          "fr"
+        ],
         "format": "wav"
       },
       {
@@ -214,39 +371,76 @@
         "src": "/audio/stories/le-lievre-et-la-tortue/le-lievre-et-la-tortue-fulfulde.wav",
         "durationHint": 258,
         "narrator": "Halidou Barry (voix de démonstration)",
-        "fallbacks": ["fr"],
+        "fallbacks": [
+          "fr"
+        ],
         "format": "wav"
       }
     ],
     "chapters": [
       {
         "id": "lievre-ch-01",
-        "title": { "fr": "La cour du soir" },
+        "title": {
+          "fr": "La cour du soir"
+        },
         "audioStart": 0,
         "audioEnd": 40,
         "narration": {
           "fr": "Le repas du soir est fini. La lune monte au-dessus du plateau, les greniers à mil dessinent leurs silhouettes rondes sur la cour balayée. Les enfants se pressent contre le vieux conteur ; celui-ci frappe le sol de son bâton de rônier, la cour retient son souffle — l'histoire peut commencer."
         },
         "cues": [
-          { "language": "fr", "start": 0.5, "end": 6.4, "text": "Le repas du soir est fini." },
-          { "language": "fr", "start": 6.8, "end": 14.2, "text": "La lune monte au-dessus du plateau." },
-          { "language": "fr", "start": 14.6, "end": 22.8, "text": "Les enfants se pressent contre le vieux conteur." },
-          { "language": "fr", "start": 23.2, "end": 30.5, "text": "Il frappe le sol de son bâton : l'histoire peut commencer." }
+          {
+            "language": "fr",
+            "start": 0.2,
+            "end": 2.7,
+            "text": "Le repas du soir est fini."
+          },
+          {
+            "language": "fr",
+            "start": 2.9,
+            "end": 6.1,
+            "text": "La lune monte au-dessus du plateau."
+          },
+          {
+            "language": "fr",
+            "start": 6.2,
+            "end": 9.8,
+            "text": "Les enfants se pressent contre le vieux conteur."
+          },
+          {
+            "language": "fr",
+            "start": 9.9,
+            "end": 13,
+            "text": "Il frappe le sol de son bâton : l'histoire peut commencer."
+          }
         ],
         "triggers": [
-          { "type": "canvas:effect", "effect": "moonlight-dust", "intensity": 0.5 },
+          {
+            "type": "canvas:effect",
+            "effect": "moonlight-dust",
+            "intensity": 0.5
+          },
           {
             "type": "visual:image",
             "src": "/images/stories/le-lievre-et-la-tortue/village-clair-de-lune.svg",
-            "alt": { "fr": "Village du plateau sous la lune, greniers à mil en silhouette" },
+            "alt": {
+              "fr": "Village du plateau sous la lune, greniers à mil en silhouette"
+            },
             "treatment": "ken-burns"
           },
-          { "type": "audio:ambient", "src": "/audio/ambient/veillee-feu-loop.mp3", "volume": 0.4, "crossfadeMs": 2000 }
+          {
+            "type": "audio:ambient",
+            "src": "/audio/ambient/veillee-feu-loop.mp3",
+            "volume": 0.4,
+            "crossfadeMs": 2000
+          }
         ]
       },
       {
         "id": "lievre-ch-02",
-        "title": { "fr": "Le défi" },
+        "title": {
+          "fr": "Le défi"
+        },
         "audioStart": 40,
         "audioEnd": 90,
         "narration": {
@@ -256,46 +450,76 @@
           {
             "type": "map:marker",
             "kind": "granary",
-            "at": { "latitude": 12.5836, "longitude": -1.2836 },
-            "label": { "fr": "La cour du village, Oubritenga" }
+            "at": {
+              "latitude": 12.5836,
+              "longitude": -1.2836
+            },
+            "label": {
+              "fr": "La cour du village, Oubritenga"
+            }
           },
-          { "type": "canvas:effect", "effect": "fireflies", "intensity": 0.4 }
+          {
+            "type": "canvas:effect",
+            "effect": "fireflies",
+            "intensity": 0.4
+          }
         ]
       },
       {
         "id": "lievre-ch-03",
-        "title": { "fr": "La course du lièvre" },
+        "title": {
+          "fr": "La course du lièvre"
+        },
         "audioStart": 90,
         "audioEnd": 140,
         "narration": {
           "fr": "Au matin, le tambour donna le signal. Le lièvre bondit comme une flèche et fila dans la poussière ; bientôt, la tortue ne fut plus qu'un point derrière lui. Arrivé aux trois quarts du chemin, si sûr de lui qu'il en riait, il s'étendit à l'ombre du karité — « juste le temps d'un somme » — et s'endormit profondément."
         },
         "triggers": [
-          { "type": "canvas:effect", "effect": "savanna-wind", "intensity": 0.85 },
-          { "type": "audio:ambient", "src": "/audio/ambient/tambour-lointain-loop.mp3", "volume": 0.25, "crossfadeMs": 1500 }
+          {
+            "type": "canvas:effect",
+            "effect": "savanna-wind",
+            "intensity": 0.85
+          },
+          {
+            "type": "audio:ambient",
+            "src": "/audio/ambient/tambour-lointain-loop.mp3",
+            "volume": 0.25,
+            "crossfadeMs": 1500
+          }
         ]
       },
       {
         "id": "lievre-ch-04",
-        "title": { "fr": "Le stratagème des carapaces" },
+        "title": {
+          "fr": "Le stratagème des carapaces"
+        },
         "audioStart": 140,
         "audioEnd": 196,
         "narration": {
           "fr": "Car la tortue, elle, avait convoqué ses cousins, ses tantes et ses enfants, et les avait postés à chaque étape du parcours. Au baobab, une voix répondit au lièvre : « Je suis déjà passée. » Au puits, au vieux fromager, à chaque étape, toujours une carapace devant lui. Le lièvre courut jusqu'au souffle court : à l'arrivée, sous le karité, la tortue l'attendait — tranquille, comme au départ."
         },
         "triggers": [
-          { "type": "canvas:effect", "effect": "fireflies", "intensity": 0.7 },
+          {
+            "type": "canvas:effect",
+            "effect": "fireflies",
+            "intensity": 0.7
+          },
           {
             "type": "visual:image",
             "src": "/images/stories/le-lievre-et-la-tortue/relais-tortues.svg",
-            "alt": { "fr": "Les tortues postées à chaque étape du parcours" },
+            "alt": {
+              "fr": "Les tortues postées à chaque étape du parcours"
+            },
             "treatment": "parallax"
           }
         ]
       },
       {
         "id": "lievre-ch-05",
-        "title": { "fr": "La leçon du soir" },
+        "title": {
+          "fr": "La leçon du soir"
+        },
         "audioStart": 196,
         "audioEnd": 252,
         "narration": {
@@ -305,10 +529,17 @@
           {
             "type": "visual:image",
             "src": "/images/stories/le-lievre-et-la-tortue/morale-du-soir.svg",
-            "alt": { "fr": "Le conteur et les enfants sous le balafon" },
+            "alt": {
+              "fr": "Le conteur et les enfants sous le balafon"
+            },
             "treatment": "fade"
           },
-          { "type": "audio:ambient", "src": "/audio/ambient/balafon-nuit-loop.mp3", "volume": 0.35, "crossfadeMs": 2500 }
+          {
+            "type": "audio:ambient",
+            "src": "/audio/ambient/balafon-nuit-loop.mp3",
+            "volume": 0.35,
+            "crossfadeMs": 2500
+          }
         ]
       }
     ],
@@ -323,69 +554,124 @@
   },
   {
     "id": "les-ruines-de-lorepeni",
-    "title": { "fr": "Les Ruines de Loropéni" },
-    "subtitle": { "fr": "La forteresse d'or du pays lobi" },
+    "title": {
+      "fr": "Les Ruines de Loropéni"
+    },
+    "subtitle": {
+      "fr": "La forteresse d'or du pays lobi"
+    },
     "category": "histoire",
     "region": {
       "code": "sud-ouest",
       "name": "Sud-Ouest",
       "department": "Loropéni (province du Poni)",
-      "coordinates": { "latitude": 10.4831, "longitude": -3.6653 }
+      "coordinates": {
+        "latitude": 10.4831,
+        "longitude": -3.6653
+      }
     },
     "era": "Apogée entre le XIVᵉ et le XVIIᵉ siècle — occupation plus ancienne",
     "people": "Lobi du Poni ; marchands lohron",
     "cover": {
       "image": "/images/stories/les-ruines-de-lorepeni/cover.svg",
-      "alt": { "fr": "Murailles de Loropéni dans la lueur de la latérite" },
-      "palette": ["#160F08", "#A66A3A", "#D9C7A7", "#3E4A2E"]
+      "alt": {
+        "fr": "Murailles de Loropéni dans la lueur de la latérite"
+      },
+      "palette": [
+        "#160F08",
+        "#A66A3A",
+        "#D9C7A7",
+        "#3E4A2E"
+      ]
     },
     "defaultLanguage": "fr",
     "languages": [
       {
         "language": "fr",
-        "src": "/audio/stories/les-ruines-de-lorepeni/les-ruines-de-lorepeni-fr.wav",
+        "src": "/audio/stories/les-ruines-de-lorepeni/les-ruines-de-lorepeni-fr.mp3",
         "durationHint": 286,
-        "narrator": "Jean-Baptiste Tah (voix de démonstration)",
+        "narrator": "Voix neuronale fr-FR (démonstration)",
         "fallbacks": [],
-        "format": "wav"
+        "format": "mp3"
       },
       {
         "language": "dioula",
         "src": "/audio/stories/les-ruines-de-lorepeni/les-ruines-de-lorepeni-dioula.wav",
         "durationHint": 293,
         "narrator": "Mariam Traoré (voix de démonstration)",
-        "fallbacks": ["fr"],
+        "fallbacks": [
+          "fr"
+        ],
         "format": "wav"
       }
     ],
     "chapters": [
       {
         "id": "lorepeni-ch-01",
-        "title": { "fr": "La forêt de pierre" },
+        "title": {
+          "fr": "La forêt de pierre"
+        },
         "audioStart": 0,
         "audioEnd": 48,
         "narration": {
           "fr": "Au sud-ouest du Burkina Faso, là où les frontières du Ghana et de la Côte d'Ivoire se touchent presque, la forêt claire s'ouvre sur un paysage impossible : des murailles de pierre, hautes comme deux hommes, surgies de la brousse. Dans le pays lobi, nul ne se souvient des bâtisseurs — les anciens disent seulement qu'elles ont toujours été là, et qu'on les salue."
         },
         "cues": [
-          { "language": "fr", "start": 0.6, "end": 7.9, "text": "Au sud-ouest du Burkina Faso…" },
-          { "language": "fr", "start": 8.3, "end": 16.1, "text": "…où les frontières se touchent presque," },
-          { "language": "fr", "start": 16.5, "end": 25.0, "text": "des murailles de pierre surgissent de la forêt claire." },
-          { "language": "fr", "start": 25.4, "end": 34.2, "text": "Les anciens disent qu'elles ont toujours été là." }
+          {
+            "language": "fr",
+            "start": 0.3,
+            "end": 3.3,
+            "text": "Au sud-ouest du Burkina Faso…"
+          },
+          {
+            "language": "fr",
+            "start": 3.5,
+            "end": 6.7,
+            "text": "…où les frontières se touchent presque,"
+          },
+          {
+            "language": "fr",
+            "start": 6.9,
+            "end": 10.4,
+            "text": "des murailles de pierre surgissent de la forêt claire."
+          },
+          {
+            "language": "fr",
+            "start": 10.6,
+            "end": 14.3,
+            "text": "Les anciens disent qu'elles ont toujours été là."
+          }
         ],
         "triggers": [
           {
             "type": "map:flyto",
-            "target": { "latitude": 10.4831, "longitude": -3.6653 },
-            "zoom": 11.5, "pitch": 60, "bearing": -20, "durationMs": 9000
+            "target": {
+              "latitude": 10.4831,
+              "longitude": -3.6653
+            },
+            "zoom": 11.5,
+            "pitch": 60,
+            "bearing": -20,
+            "durationMs": 9000
           },
-          { "type": "canvas:effect", "effect": "stone-mist", "intensity": 0.6 },
-          { "type": "audio:ambient", "src": "/audio/ambient/foret-aube-loop.mp3", "volume": 0.35, "crossfadeMs": 2500 }
+          {
+            "type": "canvas:effect",
+            "effect": "stone-mist",
+            "intensity": 0.6
+          },
+          {
+            "type": "audio:ambient",
+            "src": "/audio/ambient/foret-aube-loop.mp3",
+            "volume": 0.35,
+            "crossfadeMs": 2500
+          }
         ]
       },
       {
         "id": "lorepeni-ch-02",
-        "title": { "fr": "Les remparts sans mortier" },
+        "title": {
+          "fr": "Les remparts sans mortier"
+        },
         "audioStart": 48,
         "audioEnd": 100,
         "narration": {
@@ -395,51 +681,79 @@
           {
             "type": "map:marker",
             "kind": "stone-ruin",
-            "at": { "latitude": 10.4831, "longitude": -3.6653 },
-            "label": { "fr": "L'enceinte principale de Loropéni" }
+            "at": {
+              "latitude": 10.4831,
+              "longitude": -3.6653
+            },
+            "label": {
+              "fr": "L'enceinte principale de Loropéni"
+            }
           },
           {
             "type": "visual:image",
             "src": "/images/stories/les-ruines-de-lorepeni/remparts.svg",
-            "alt": { "fr": "Murailles de latérite assemblées sans mortier" },
+            "alt": {
+              "fr": "Murailles de latérite assemblées sans mortier"
+            },
             "treatment": "ken-burns"
           }
         ]
       },
       {
         "id": "lorepeni-ch-03",
-        "title": { "fr": "L'or du Lobi" },
+        "title": {
+          "fr": "L'or du Lobi"
+        },
         "audioStart": 100,
         "audioEnd": 156,
         "narration": {
           "fr": "Les chercheurs situent l'apogée du site entre le XIVᵉ et le XVIIᵉ siècle, lorsque l'or du pays lobi alimentait les grandes caravanes du Sahara. Les Lohron, marchands d'or, y auraient fait de Loropéni un entrepôt fortifié — un nœud précieux entre la forêt du sud et les pistes du désert."
         },
         "triggers": [
-          { "type": "canvas:effect", "effect": "golden-dust", "intensity": 0.75 },
+          {
+            "type": "canvas:effect",
+            "effect": "golden-dust",
+            "intensity": 0.75
+          },
           {
             "type": "visual:image",
             "src": "/images/stories/les-ruines-de-lorepeni/route-de-l-or.svg",
-            "alt": { "fr": "Caravanes chargées d'or traversant la savane" },
+            "alt": {
+              "fr": "Caravanes chargées d'or traversant la savane"
+            },
             "treatment": "parallax"
           }
         ]
       },
       {
         "id": "lorepeni-ch-04",
-        "title": { "fr": "L'abandon et les interdits" },
+        "title": {
+          "fr": "L'abandon et les interdits"
+        },
         "audioStart": 156,
         "audioEnd": 210,
         "narration": {
           "fr": "Quand les routes de l'or déclinèrent, la forteresse se vida lentement. La forêt reprit ses droits, et les générations suivantes entourèrent les pierres d'interdits : on n'y cultive pas, on n'y coupe pas le bois, on salue les esprits avant d'y entrer. Ce respect silencieux, transmis de bouche en bouche, a protégé les murs pendant des siècles."
         },
         "triggers": [
-          { "type": "canvas:effect", "effect": "harmattan", "intensity": 0.45 },
-          { "type": "audio:ambient", "src": "/audio/ambient/foret-silence-loop.mp3", "volume": 0.2, "crossfadeMs": 3000 }
+          {
+            "type": "canvas:effect",
+            "effect": "harmattan",
+            "intensity": 0.45
+          },
+          {
+            "type": "audio:ambient",
+            "src": "/audio/ambient/foret-silence-loop.mp3",
+            "volume": 0.2,
+            "crossfadeMs": 3000
+          }
         ]
       },
       {
         "id": "lorepeni-ch-05",
-        "title": { "fr": "Patrimoine mondial" },
+        "title": {
+          "fr": "Patrimoine mondial"
+        },
         "audioStart": 210,
         "audioEnd": 286,
         "narration": {
@@ -449,13 +763,21 @@
           {
             "type": "visual:image",
             "src": "/images/stories/les-ruines-de-lorepeni/patrimoine-mondial.svg",
-            "alt": { "fr": "Emblème du patrimoine mondial au-dessus des ruines" },
+            "alt": {
+              "fr": "Emblème du patrimoine mondial au-dessus des ruines"
+            },
             "treatment": "fade"
           },
           {
             "type": "map:flyto",
-            "target": { "latitude": 10.4831, "longitude": -3.6653 },
-            "zoom": 10, "pitch": 45, "bearing": 0, "durationMs": 6500
+            "target": {
+              "latitude": 10.4831,
+              "longitude": -3.6653
+            },
+            "zoom": 10,
+            "pitch": 45,
+            "bearing": 0,
+            "durationMs": 6500
           }
         ]
       }

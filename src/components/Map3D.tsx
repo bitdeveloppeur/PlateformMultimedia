@@ -70,6 +70,11 @@ export interface Map3DProps {
   visibleStoryIds?: readonly string[];
   /** Exagération du relief — le plateau burkinabè est doux : 1.4 par défaut. */
   terrainExaggeration?: number;
+  /**
+   * Vue initiale narrative (page récit, Étape 4) : vol au chargement au lieu
+   * de la vue d'ensemble nationale. Non fournie → comportement atlas inchangé.
+   */
+  initialView?: CameraView;
 }
 
 /* ── Sources & style cartographique ────────────────────────────────────────── */
@@ -233,6 +238,52 @@ export function cameraViewFromChapter(story: Story, chapterIndex: number): Camer
   return cameraViewFromStory(story);
 }
 
+/**
+ * Vol caméra très fluide vers une vue narrative.
+ * • Long trajet  → `flyTo` (arc cinématique, curve 1.55) ;
+ * • Court trajet → `easeTo` (easing cubic in-out, sans effet d'arc).
+ * Les deux chemins animent centre, zoom, pitch et bearing simultanément.
+ */
+function flyMapTo(map: MapLibreMap, cameraView: CameraView): void {
+  const center: [number, number] = [
+    cameraView.longitude,
+    cameraView.latitude,
+  ];
+  const zoom = cameraView.zoom ?? FOCUS_ZOOM;
+  const pitch = cameraView.pitch ?? FOCUS_PITCH;
+  const bearing = cameraView.bearing ?? FOCUS_BEARING;
+  const durationMs = cameraView.durationMs ?? FOCUS_DURATION_MS;
+
+  const distanceMeters = map
+    .getCenter()
+    .distanceTo(new maplibregl.LngLat(center[0], center[1]));
+  const isShortHop =
+    distanceMeters < 120_000 &&
+    Math.abs(map.getZoom() - zoom) < 2 &&
+    Math.abs(map.getBearing() - bearing) < 60;
+
+  if (isShortHop) {
+    map.easeTo({
+      center,
+      zoom,
+      pitch,
+      bearing,
+      duration: Math.max(900, durationMs * 0.55),
+      easing: easeInOutCubic,
+    });
+  } else {
+    map.flyTo({
+      center,
+      zoom,
+      pitch,
+      bearing,
+      duration: durationMs,
+      curve: 1.55,
+      essential: true,
+    });
+  }
+}
+
 /* ── Marqueur DOM : pastille numérotée + pilule région + tooltip ───────────── */
 
 function renderTooltipHtml(story: Story): string {
@@ -280,6 +331,7 @@ function Map3DBase(
     selectedStoryId,
     visibleStoryIds,
     terrainExaggeration = 1.4,
+    initialView,
   }: Map3DProps,
   ref: ForwardedRef<Map3DHandle>,
 ) {
@@ -287,6 +339,8 @@ function Map3DBase(
   const mapRef = useRef<MapLibreMap | null>(null);
   const markersRef = useRef<StoryMarkerRecord[]>([]);
   const onSelectRef = useRef(onSelectStory);
+  const initialViewRef = useRef(initialView);
+  initialViewRef.current = initialView;
 
   const [ready, setReady] = useState(false);
   const [webglOk, setWebglOk] = useState(true);
@@ -338,14 +392,19 @@ function Map3DBase(
       map.setTerrain({ source: TERRAIN_SOURCE_ID, exaggeration: terrainExaggeration });
       map.resize();
 
-      /* Vue d'ensemble nationale, plane comme une carte posée. */
-      map.fitBounds(burkinaBounds(), {
-        padding: FIT_PADDING,
-        pitch: 0,
-        bearing: 0,
-        duration: 1400,
-        essential: true,
-      });
+      /* Vue initiale : décor narratif du récit (page Étape 4) si fourni,
+       * sinon vue d'ensemble nationale, plane comme une carte posée. */
+      if (initialViewRef.current) {
+        flyMapTo(map, initialViewRef.current);
+      } else {
+        map.fitBounds(burkinaBounds(), {
+          padding: FIT_PADDING,
+          pitch: 0,
+          bearing: 0,
+          duration: 1400,
+          essential: true,
+        });
+      }
 
       /* Marqueurs pastilles numérotées (numérotation = ordre du corpus). */
       const created: StoryMarkerRecord[] = [];
@@ -401,53 +460,11 @@ function Map3DBase(
   useImperativeHandle(
     ref,
     () => ({
-      /**
-       * Vol caméra très fluide vers une vue narrative.
-       * • Long trajet  → `flyTo` (arc cinématique, curve 1.55) ;
-       * • Court trajet → `easeTo` (easing cubic in-out, sans effet d'arc).
-       * Les deux chemins animent centre, zoom, pitch et bearing simultanément.
-       */
+      /** Vol caméra animé vers la vue demandée (voir `flyMapTo`). */
       flyToStory(cameraView: CameraView) {
         const map = mapRef.current;
         if (!map) return;
-
-        const center: [number, number] = [
-          cameraView.longitude,
-          cameraView.latitude,
-        ];
-        const zoom = cameraView.zoom ?? FOCUS_ZOOM;
-        const pitch = cameraView.pitch ?? FOCUS_PITCH;
-        const bearing = cameraView.bearing ?? FOCUS_BEARING;
-        const durationMs = cameraView.durationMs ?? FOCUS_DURATION_MS;
-
-        const distanceMeters = map
-          .getCenter()
-          .distanceTo(new maplibregl.LngLat(center[0], center[1]));
-        const isShortHop =
-          distanceMeters < 120_000 &&
-          Math.abs(map.getZoom() - zoom) < 2 &&
-          Math.abs(map.getBearing() - bearing) < 60;
-
-        if (isShortHop) {
-          map.easeTo({
-            center,
-            zoom,
-            pitch,
-            bearing,
-            duration: Math.max(900, durationMs * 0.55),
-            easing: easeInOutCubic,
-          });
-        } else {
-          map.flyTo({
-            center,
-            zoom,
-            pitch,
-            bearing,
-            duration: durationMs,
-            curve: 1.55,
-            essential: true,
-          });
-        }
+        flyMapTo(map, cameraView);
       },
 
       /** Retour cinématique à la vue d'ensemble nationale (plane). */

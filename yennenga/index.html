@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Yennenga, la princesse étalon — histoire interactive</title>
+<!-- Histoire interactive pour enfants — moteur issu de la skill spot-motion-studio
+     (conventions : __seek(ms) pur et déterministe, __total, ?video -> __ready). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sable:#F6E8CE; --sable2:#EFD9AE; --encre:#33241A; --terra:#D96C3D; --or:#E8A93B;
+  --vert:#6B8F4E; --nuit:#141F3C; --nuit2:#0D1626; --ivoire:#F2E8D5; --or-clair:#E3C766;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0B1226;overflow:hidden;font-family:"Baloo 2","Trebuchet MS","Segoe UI",sans-serif}
+#ywrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#ystage{position:relative;width:1280px;height:800px;overflow:hidden;border-radius:24px;flex:none;transform-origin:center center;
+  box-shadow:0 30px 80px rgba(0,0,0,.5)}
+#ystage *{animation-play-state:paused !important}
+/* --- fonds jour / nuit (crossfade piloté par seek) --- */
+.bgj,.bgn{position:absolute;inset:0}
+.bgj{background:radial-gradient(120% 90% at 78% 8%,#FBEED4 0%,var(--sable) 46%,var(--sable2) 100%)}
+.bgn{background:radial-gradient(120% 90% at 78% 8%,#22315E 0%,var(--nuit) 52%,var(--nuit2) 100%)}
+#yglow{position:absolute;left:820px;top:40px;width:560px;height:560px;border-radius:50%;pointer-events:none}
+.yetoile{position:absolute;left:0;top:0;pointer-events:none}
+/* --- numéro fantôme --- */
+.yghost{position:absolute;left:-24px;bottom:-170px;font-size:520px;font-weight:800;line-height:1;opacity:0;pointer-events:none}
+/* --- carte d'illustration --- */
+#ycard{position:absolute;left:70px;top:170px;width:640px;height:520px;border-radius:28px;overflow:hidden;
+  border:8px solid #FFFDF6;box-shadow:0 24px 60px rgba(51,36,26,.35);z-index:3;background:#E8D9BC}
+#ycard img.yillu{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}
+.ybadge{position:absolute;right:-30px;top:-30px;width:116px;height:116px;z-index:4;filter:drop-shadow(0 6px 14px rgba(51,36,26,.3))}
+/* --- colonne de texte --- */
+#ytext{position:absolute;left:770px;top:150px;width:450px;z-index:4}
+.ykick{font-size:17px;letter-spacing:3px;font-weight:700;color:var(--terra);margin-bottom:14px;animation:ykickIn .8s ease .3s both}
+@keyframes ykickIn{from{opacity:0;letter-spacing:12px}to{opacity:1;letter-spacing:3px}}
+.nuit .ykick{color:var(--or-clair)}
+#ytext h2{font-size:52px;line-height:1.04;font-weight:800;color:var(--encre);letter-spacing:-.5px;margin-bottom:20px}
+#ytext .nuit h2,#ytext.nuit h2{color:var(--ivoire)}
+.ych{display:inline-block;white-space:pre;animation:ychIn .65s cubic-bezier(.2,1.3,.4,1) calc(var(--i)*85ms + 380ms) both}
+@keyframes ychIn{from{opacity:0;transform:translateY(46px) rotate(7deg)}to{opacity:1;transform:none}}
+.yphrase{font-size:29px;line-height:1.5;font-weight:600;color:#5C4632;max-width:440px}
+.nuit .yphrase{color:#EDE4CF}
+.yw{display:inline-block;overflow:hidden;vertical-align:top;padding-right:.24em;margin-right:-.24em;padding-bottom:.12em}
+.yw>span{display:inline-block;animation:ywIn .7s cubic-bezier(.2,.9,.2,1) calc(var(--i)*340ms + 1s) both}
+@keyframes ywIn{from{transform:translateY(112%) rotate(4deg)}to{transform:none}}
+.yhint{position:absolute;left:770px;bottom:118px;font-size:16px;font-weight:600;color:#A98F73;z-index:4;animation:yrise .8s ease 2.4s both}
+@keyframes yrise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+/* --- barre des chapitres --- */
+#ychap{position:absolute;left:50%;top:26px;transform:translateX(-50%);display:flex;gap:8px;z-index:6;align-items:center;
+  background:rgba(51,36,26,.78);padding:10px 16px;border-radius:999px}
+#ychap .ytitre{color:var(--ivoire);font-weight:700;font-size:16px;margin-right:10px;white-space:nowrap}
+.ypl{all:unset;cursor:pointer;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:#D9C6A6;font-weight:700;font-size:15px;transition:transform .15s}
+.ypl:hover{transform:scale(1.15)}
+.ypl.on{background:var(--or);color:var(--encre)}
+.ypl.fait{color:var(--or-clair)}
+/* --- lecteur --- */
+#yplay{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;z-index:6;
+  background:rgba(51,36,26,.86);border-radius:999px;padding:10px 20px;color:var(--ivoire)}
+.ybt{all:unset;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ivoire);border-radius:50%}
+.ybt:hover{color:var(--or-clair)}
+.ybt svg{display:block}
+#yscrub{width:420px;accent-color:var(--or);cursor:pointer}
+#ytc{font-size:15px;font-weight:600;color:#D9C6A6;font-variant-numeric:tabular-nums;white-space:nowrap}
+/* --- écran de fin --- */
+#yfin{position:absolute;inset:0;z-index:10;display:none;align-items:center;justify-content:center;
+  background:rgba(13,22,38,.82)}
+.yfincarte{background:var(--sable);border-radius:28px;padding:38px 44px;width:840px;text-align:center;
+  box-shadow:0 30px 90px rgba(0,0,0,.5);border:8px solid #FFFDF6}
+.yfincarte h3{font-size:44px;color:var(--encre);font-weight:800;margin-bottom:6px}
+.yfincarte .ysav{font-size:19px;color:var(--terra);font-weight:700;letter-spacing:2px;margin-bottom:14px}
+.yfincarte p{font-size:21px;line-height:1.55;color:#5C4632;font-weight:600}
+.ycarte-ligne{display:flex;align-items:center;justify-content:center;gap:26px;margin:18px 0 4px}
+.ycarte-ligne img{width:300px;height:auto}
+.yville{font-size:16px;font-weight:700;color:var(--encre)}
+.yville small{display:block;font-weight:600;color:#8C7357;font-size:13px}
+.yrejouer{all:unset;cursor:pointer;display:inline-block;margin-top:14px;background:var(--terra);color:#FFF7EA;
+  font-family:inherit;font-weight:800;font-size:24px;padding:13px 34px;border-radius:999px;
+  box-shadow:0 12px 30px rgba(217,108,61,.45)}
+.yrejouer:hover{transform:translateY(-2px)}
+#yprog{position:absolute;left:0;bottom:0;height:6px;background:linear-gradient(90deg,var(--terra),var(--or));z-index:7;border-radius:0 3px 3px 0}
+#yfade{position:absolute;inset:0;background:var(--nuit2);z-index:8;pointer-events:none;opacity:0}
+</style></head>
+<body><div id="ywrap"><div id="ystage">
+  <div class="bgj" id="ybgj"></div>
+  <div class="bgn" id="ybgn"></div>
+  <div id="yglow"></div>
+  <div id="yghosts"></div>
+  <div id="yetoiles"></div>
+  <div id="ycard"><div class="ybadge" id="ybadge"></div></div>
+  <div id="ytext"></div>
+  <div class="yhint" id="yhint">Clique sur un numéro pour changer de chapitre</div>
+  <div id="ychap"><span class="ytitre">Yennenga, la princesse étalon</span></div>
+  <div id="yplay">
+    <button class="ybt" id="yprev" aria-label="Chapitre précédent"><svg width="26" height="26" viewBox="0 0 16 16"><path d="M4 2h2.4v12H4zM13 2v12L6.8 8z" fill="currentColor"/></svg></button>
+    <button class="ybt" id="ypp" aria-label="Lecture / pause"><svg id="yicoplay" width="30" height="30" viewBox="0 0 16 16"><path d="M3.5 1.5v13l11-6.5z" fill="currentColor"/></svg><svg id="yicopause" width="30" height="30" viewBox="0 0 16 16" style="display:none"><path d="M3 2h4v12H3zM9 2h4v12H9z" fill="currentColor"/></svg></button>
+    <button class="ybt" id="ynext" aria-label="Chapitre suivant"><svg width="26" height="26" viewBox="0 0 16 16"><path d="M9.6 2H12v12H9.6zM3 2v12L9.2 8z" fill="currentColor"/></svg></button>
+    <input id="yscrub" type="range" min="0" step="1" value="0" aria-label="Position dans l'histoire">
+    <span id="ytc">0:00 / 0:00</span>
+  </div>
+  <div id="yfin">
+    <div class="yfincarte">
+      <h3>L'histoire est finie !</h3>
+      <div class="ysav">LE SAVAIS-TU ?</div>
+      <p>Le grand prix du FESPACO, le festival du cinéma africain, s'appelle
+      l'<strong>« Étalon d'or de Yennenga »</strong>. Et « Burkina Faso » veut dire
+      <strong>« le pays des Hommes intègres »</strong>.</p>
+      <div class="ycarte-ligne">
+        <div class="yville">Gambaga<small>le royaume du roi Nédéga</small></div>
+        <img src="images/carte.svg" alt="Le voyage de Yennenga, de Gambaga au pays Mossi">
+        <div class="yville">Pays Mossi<small>le royaume d'Ouédraogo</small></div>
+      </div>
+      <button class="yrejouer" id="yrejouer">Rejouer l'histoire</button>
+    </div>
+  </div>
+  <div id="yprog"></div>
+  <div id="yfade"></div>
+</div></div>
+<script>
+/* ===== Données de l'histoire (légende de Yennenga, Burkina Faso) ===== */
+var SCENES=[
+ {theme:"jour",img:"images/s1.jpg",kick:"CHAPITRE 1 · LE ROYAUME",title:"Yennenga",
+  text:"Au royaume de Gambaga vivait Yennenga, la fille intrépide du roi Nédéga."},
+ {theme:"jour",img:"images/s2.jpg",kick:"CHAPITRE 2 · L'ENFANCE",title:"La petite guerrière",
+  text:"Elle chassait, tirait à l'arc et chevauchait mieux que tous les guerriers !"},
+ {theme:"jour",img:"images/s3.jpg",kick:"CHAPITRE 3 · AU PALAIS",title:"Le refus du roi",
+  text:"Quand elle voulut choisir son chemin, le roi dit non et la garda au palais."},
+ {theme:"nuit",img:"images/s4.jpg",kick:"CHAPITRE 4 · LA NUIT",title:"La grande évasion",
+  text:"Une nuit, son fidèle étalon l'emporta au galop, vers le nord, sous les étoiles."},
+ {theme:"jour",img:"images/s5.jpg",kick:"CHAPITRE 5 · LA BROUSSE",title:"Riale le chasseur",
+  text:"Au matin, dans la brousse, le chasseur Riale lui offrit l'eau et l'hospitalité."},
+ {theme:"jour",img:"images/s6.svg",kick:"CHAPITRE 6 · LA FAMILLE",title:"Une famille",
+  text:"De leur amour naquit Ouédraogo, « l'étalon », qui grandit fort et généreux."},
+ {theme:"jour",img:"images/s7.jpg",kick:"CHAPITRE 7 · LE ROYAUME",title:"Les Mossi",
+  text:"Adulte, Ouédraogo fonda le royaume des Mossi, au pays des Hommes intègres."},
+ {theme:"jour",img:"images/s8.jpg",kick:"CHAPITRE 8 · AUJOURD'HUI",title:"Les Étalons",
+  text:"Le Burkina Faso honore encore Yennenga : son équipe s'appelle « Les Étalons » !"}
+];
+/* Durée par scène : temps de lecture des mots + installation + respiration. */
+SCENES.forEach(function(s){ s.dur = 2400 + s.text.split(" ").length*360 + 1400; });
+var TOTAL=SCENES.reduce(function(a,s){return a+s.dur},0),starts=[],acc=0;
+SCENES.forEach(function(s){starts.push(acc);acc+=s.dur});
+function cl(u){return Math.max(0,Math.min(1,u))}
+function eo(u){return 1-Math.pow(1-u,3)}
+function eio(u){return u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2}
+function fmtT(ms){var s=Math.floor(ms/1000);return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
+/* ===== Construction du décor ===== */
+var SOLEIL='<img src="images/soleil.svg" alt="">',
+    LUNE='<img src="images/nuit.svg" alt="">';
+var ghosts=[],illuEls=[],colEls=[],pills=[];
+SCENES.forEach(function(s,i){
+  var g=document.createElement("div");g.className="yghost";
+  g.style.color=s.theme==="nuit"?"#8FA0D8":"#E3CFA4";g.textContent=String(i+1);
+  document.getElementById("yghosts").appendChild(g);ghosts.push(g);
+  var im=document.createElement("img");im.className="yillu";im.src=s.img;im.alt="Illustration : "+s.title;
+  document.getElementById("ycard").insertBefore(im,document.getElementById("ybadge"));illuEls.push(im);
+  var c=document.createElement("div");
+  var titleHtml=s.title.split("").map(function(ch,j){return '<span class="ych" style="--i:'+j+'">'+(ch===" "?"&nbsp;":ch)+"</span>"}).join("");
+  var words=s.text.split(" ").map(function(w,j){return '<span class="yw"><span style="--i:'+j+'">'+w+"</span></span>"}).join(" ");
+  c.innerHTML='<div class="ykick">'+s.kick+'</div><h2>'+titleHtml+'</h2><p class="yphrase">'+words+"</p>";
+  if(s.theme==="nuit")c.className="nuit";
+  document.getElementById("ytext").appendChild(c);colEls.push(c);
+  var b=document.createElement("button");b.className="ypl";b.textContent=String(i+1);
+  b.setAttribute("aria-label","Chapitre "+(i+1));b.addEventListener("click",function(){aller(i)});
+  document.getElementById("ychap").appendChild(b);pills.push(b);
+});
+/* Petites étoiles dérivantes (fonction pure de t) — visibles la nuit. */
+var ETS=[];for(var i=0;i<14;i++){var e=document.createElement("img");e.className="yetoile";
+  e.src="images/nuit.svg";e.style.width=e.style.height=(26+(i*13)%34)+"px";e.style.opacity=0;
+  document.getElementById("yetoiles").appendChild(e);
+  ETS.push({el:e,x:(i*173)%1240,y:(i*97)%760,v:4+(i%4)*2,p:i*1.9})}
+/* ===== seek(ms) — pur, déterministe (lecteur ET ?video) ===== */
+var badgeNuit=null;
+function seek(ms){
+  var t=Math.max(0,Math.min(ms,TOTAL-1)),k=0;while(k<SCENES.length-1&&t>=starts[k+1])k++;
+  var local=t-starts[k],dur=SCENES[k].dur,s=SCENES[k];
+  /* nuité cible : montée à l'entrée d'une scène nuit, descente en sortie */
+  var tgt=s.theme==="nuit"?1:0;
+  var prevNuit=k>0&&SCENES[k-1].theme==="nuit";
+  var mixNuit=tgt===1?cl(local/700):(prevNuit?1-cl(local/700):0);
+  document.getElementById("ybgj").style.opacity=(1-mixNuit).toFixed(3);
+  document.getElementById("ybgn").style.opacity=mixNuit.toFixed(3);
+  var nuit=mixNuit>.5;
+  var gl=document.getElementById("yglow");
+  gl.style.background=nuit?"radial-gradient(circle,rgba(227,199,102,.20),transparent 66%)"
+                          :"radial-gradient(circle,rgba(232,169,59,.24),transparent 66%)";
+  gl.style.transform="translate("+(180+Math.sin(t/900)*40)+"px,"+(120+Math.cos(t/1100)*30)+"px) scale("+(1+Math.sin(t/480)*.05)+")";
+  ETS.forEach(function(p){
+    var x=((p.x+t*p.v*.015)%1280)-40,y=((p.y+t*p.v*.02)%800)-40;
+    p.el.style.transform="translate("+x+"px,"+y+"px) rotate("+(t*.01+p.p)+"deg)";
+    p.el.style.opacity=(mixNuit*(.35+.3*Math.sin(t/700+p.p))).toFixed(2);
+  });
+  ghosts.forEach(function(g,j){
+    var lt=t-starts[j],ein=eo(cl(lt/1000)),xo=j<SCENES.length-1?eio(cl((t-starts[j+1])/700)):0;
+    g.style.opacity=(.09*ein*(1-xo)).toFixed(4);
+    g.style.transform="translateX("+((1-ein)*160-xo*160+lt*.010)+"px)";
+  });
+  /* illustration courante : entrée douce puis respiration légère */
+  illuEls.forEach(function(el,j){
+    if(j!==k){el.style.opacity=0;return}
+    var u=eo(cl(local/600));
+    el.style.opacity=u;
+    el.style.transform="scale("+(1.045-.045*u+Math.sin(t/1300)*.006)+")";
+  });
+  /* badge soleil / lune — remplacé seulement si le thème change */
+  if(badgeNuit!==nuit){document.getElementById("ybadge").innerHTML=nuit?LUNE:SOLEIL;badgeNuit=nuit}
+  var bd=document.getElementById("ybadge");
+  bd.style.transform="rotate("+(Math.sin(t/800)*6)+"deg) translateY("+(Math.sin(t/650)*5)+"px)";
+  /* colonne de texte : animations figées à l'instant local */
+  colEls.forEach(function(c,j){
+    if(j!==k){c.style.display="none";return}
+    c.style.display="block";
+    var u2=j<SCENES.length-1?cl((local-(dur-500))/500):0;
+    c.style.opacity=1-u2;c.style.transform="translateY("+(-18*eio(u2))+"px)";
+    c.getAnimations({subtree:true}).forEach(function(a){a.pause();a.currentTime=Math.max(0,local)});
+  });
+  pills.forEach(function(p,j){p.className="ypl"+(j===k?" on":(t>=starts[j]+SCENES[j].dur?" fait":""))});
+  document.getElementById("yprog").style.width=(t/TOTAL*1280)+"px";
+  document.getElementById("yfade").style.opacity=Math.max(1-t/400,0).toFixed(3);
+  if(!VID){
+    document.getElementById("yscrub").value=Math.round(t);
+    document.getElementById("ytc").textContent=fmtT(t)+" / "+fmtT(TOTAL);
+    var fin=document.getElementById("yfin");
+    if(t>=TOTAL-40){fin.style.display="flex";fin.style.opacity=cl((local-400)/500).toFixed(2)}
+    else fin.style.display="none";
+  }
+}
+window.__seek=seek;window.__total=TOTAL;window.__starts=starts;
+/* ===== Mode ?video (rendu) vs navigation (lecteur interactif) ===== */
+var VID=/[?&]video/.test(location.search),stage=document.getElementById("ystage");
+function fit(){var sc=Math.min(innerWidth/1300,innerHeight/820);stage.style.transform=VID?"none":"scale("+sc+")"}
+fit();addEventListener("resize",fit);
+function aller(k){
+  k=Math.max(0,Math.min(SCENES.length-1,k));
+  if(!VID){fini=false;document.getElementById("yfin").style.display="none";
+    t0=performance.now()-starts[k];if(paused){off=starts[k]}seek(starts[k])}
+  else seek(starts[k]);
+}
+if(VID){
+  ["ychap","yplay","yhint"].forEach(function(id){document.getElementById(id).style.display="none"});
+  window.__ready=true;seek(0);
+}else{
+  var scrub=document.getElementById("yscrub");scrub.max=Math.round(TOTAL);
+  var t0=performance.now(),paused=false,off=0,fini=false;
+  var icoP=document.getElementById("yicoplay"),icoS=document.getElementById("yicopause");
+  function cur(){return paused?off:performance.now()-t0}
+  function chapitreActuel(){var k=0;while(k<SCENES.length-1&&cur()>=starts[k+1])k++;return k}
+  function ui(){icoP.style.display=paused?"none":"block";icoS.style.display=paused?"block":"none"}
+  function toggle(){if(fini){rejouer();return}paused=!paused;if(paused)off=performance.now()-t0;else t0=performance.now()-off;ui()}
+  function rejouer(){fini=false;document.getElementById("yfin").style.display="none";paused=false;t0=performance.now();ui()}
+  document.getElementById("ypp").addEventListener("click",toggle);
+  document.getElementById("yprev").addEventListener("click",function(){aller(chapitreActuel()-1)});
+  document.getElementById("ynext").addEventListener("click",function(){aller(chapitreActuel()+1)});
+  document.getElementById("yrejouer").addEventListener("click",rejouer);
+  scrub.addEventListener("input",function(){fini=false;document.getElementById("yfin").style.display="none";
+    t0=performance.now()-(+scrub.value);if(paused)off=+scrub.value;seek(+scrub.value)});
+  addEventListener("keydown",function(e){
+    if(e.code==="Space"){e.preventDefault();toggle()}
+    if(e.code==="ArrowRight")aller(chapitreActuel()+1);
+    if(e.code==="ArrowLeft")aller(chapitreActuel()-1);
+  });
+  ui();
+  (function loop(){
+    var t=performance.now()-t0;
+    if(!paused&&t>=TOTAL){if(!fini){fini=true;paused=true;off=TOTAL-1;ui();seek(TOTAL-1)}}
+    else if(!paused)seek(t);
+    requestAnimationFrame(loop);
+  })();
+}
+</script></body></html>

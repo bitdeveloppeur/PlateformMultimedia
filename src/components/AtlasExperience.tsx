@@ -200,6 +200,7 @@ export default function AtlasExperience({ stories }: { stories: Story[] }) {
             <StoryPlayerCard
               story={selected}
               onChapterChange={(chapterIndex) => handleChapterChange(selected, chapterIndex)}
+              openHref={`/recits/${selected.id}`}
             />
           )}
         </div>
