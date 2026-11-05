@@ -23,12 +23,13 @@
       "mother": null,
       "forest": { "x": 1700 },
       "act": null,
-      "cover": true
+      "cover": true,
+      "mapCoords": { "lng": -0.5, "lat": 10.5, "zoom": 6.5, "pitch": 50, "bearing": -20 }
     },
     {
       "chap": "1 · Gambaga",
-      "text": "Il y a très longtemps, à Gambaga, vivait une princesse qui montait à cheval mieux que tous les guerriers du roi. Elle s’appelait Yennenga.",
-      "task": "Touche le cheval pour qu’il galope.",
+      "text": "Il y a très longtemps, à Gambaga, vivait une princesse qui montait à cheval mieux que tous les guerriers du roi. Elle s'appelait Yennenga.",
+      "task": "Touche le cheval pour qu'il galope.",
       "sky": "#F0C98F",
       "night": 0,
       "stars": 0,
@@ -38,11 +39,12 @@
       "hunter": null,
       "mother": null,
       "forest": { "x": 1700 },
-      "act": "gallop"
+      "act": "gallop",
+      "mapCoords": { "lng": -0.5, "lat": 10.5, "zoom": 8, "pitch": 60, "bearing": -30 }
     },
     {
       "chap": "2 · Le roi Nedega",
-      "text": "Son père, le roi Nedega, l’aimait tant qu’il refusait de la laisser partir ou se marier.",
+      "text": "Son père, le roi Nedega, l'aimait tant qu'il refusait de la laisser partir ou se marier.",
       "task": "Touche le roi : que répond-il ?",
       "sky": "#F0C98F",
       "night": 0,
@@ -53,7 +55,8 @@
       "hunter": null,
       "mother": null,
       "forest": { "x": 1700 },
-      "act": "king"
+      "act": "king",
+      "mapCoords": { "lng": -0.5, "lat": 10.5, "zoom": 8.5, "pitch": 55, "bearing": -25 }
     },
     {
       "chap": "3 · Le champ de gombo",
@@ -68,7 +71,8 @@
       "hunter": null,
       "mother": null,
       "forest": { "x": 1700 },
-      "act": "okra"
+      "act": "okra",
+      "mapCoords": { "lng": -0.5, "lat": 10.5, "zoom": 9, "pitch": 50, "bearing": -20 }
     },
     {
       "chap": "4 · La nuit sans lune",
@@ -83,7 +87,8 @@
       "hunter": null,
       "mother": null,
       "forest": { "x": 900 },
-      "act": "stars"
+      "act": "stars",
+      "mapCoords": { "lng": -0.43, "lat": 11.1, "zoom": 7.5, "pitch": 65, "bearing": 0 }
     },
     {
       "chap": "5 · Rialé le chasseur",
@@ -98,12 +103,13 @@
       "hunter": { "x": 1300, "y": 560, "s": 0.7 },
       "mother": null,
       "forest": { "x": 0 },
-      "act": "bushes"
+      "act": "bushes",
+      "mapCoords": { "lng": -0.37, "lat": 11.78, "zoom": 8.5, "pitch": 60, "bearing": -15 }
     },
     {
       "chap": "6 · Ouédraogo",
-      "text": "Ils eurent un fils. Pour remercier le cheval, Yennenga l’appela Ouédraogo, « l’étalon ». Il devint l’ancêtre du peuple moaga.",
-      "task": "Touche le cheval pour qu’il salue le bébé.",
+      "text": "Ils eurent un fils. Pour remercier le cheval, Yennenga l'appela Ouédraogo, « l'étalon ». Il devint l'ancêtre du peuple moaga.",
+      "task": "Touche le cheval pour qu'il salue le bébé.",
       "sky": "#F2D2A6",
       "night": 0,
       "stars": 0,
@@ -113,7 +119,8 @@
       "hunter": { "x": 1180, "y": 430, "s": 0.9 },
       "mother": { "x": 560, "y": 420, "s": 1.25 },
       "forest": { "x": 1700 },
-      "act": "baby"
+      "act": "baby",
+      "mapCoords": { "lng": -0.37, "lat": 11.78, "zoom": 9, "pitch": 55, "bearing": -20 }
     }
   ]
 }

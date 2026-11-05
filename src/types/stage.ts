@@ -27,6 +27,15 @@ export interface StagePose {
 /** Micro-tâches tactiles connues du moteur (voir InteractiveStory). */
 export type StageAct = 'gallop' | 'king' | 'okra' | 'stars' | 'bushes' | 'baby';
 
+/** Coordonnées de caméra pour animer la carte 3D. */
+export interface MapCoords {
+  lng: number;
+  lat: number;
+  zoom: number;
+  pitch?: number;
+  bearing?: number;
+}
+
 /** Une page du conte : décor + poses + tâche éventuelle. */
 export interface StageScene {
   /** Étiquette de chapitre affichée (ex. « 1 · Gambaga »). */
@@ -53,6 +62,8 @@ export interface StageScene {
   act?: StageAct | null;
   /** Page de couverture (titre masqué, texte d'invitation). */
   cover?: boolean;
+  /** Coordonnées de caméra 3D pour cette page. */
+  mapCoords?: MapCoords;
 }
 
 /** Livre complet : stage + décors statiques + pages. */
