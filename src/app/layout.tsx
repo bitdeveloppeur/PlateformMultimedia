@@ -7,12 +7,14 @@ const display = Playfair_Display({
   weight: ['600', '700'],
   variable: '--font-display',
   display: 'swap',
+  fallback: ['Georgia', 'serif'],
 });
 
 const sans = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
+  fallback: ['system-ui', 'sans-serif'],
 });
 
 /* Design-system « story.pen » — conte interactif (Étape conte page-par-page). */
@@ -21,6 +23,7 @@ const taleDisplay = Fraunces({
   weight: ['400', '600'],
   variable: '--font-tale-display',
   display: 'swap',
+  fallback: ['Georgia', 'serif'],
 });
 
 const taleUi = Hanken_Grotesk({
@@ -28,6 +31,7 @@ const taleUi = Hanken_Grotesk({
   weight: ['400', '500', '600'],
   variable: '--font-tale-ui',
   display: 'swap',
+  fallback: ['system-ui', 'sans-serif'],
 });
 
 const taleMono = JetBrains_Mono({
@@ -35,6 +39,7 @@ const taleMono = JetBrains_Mono({
   weight: ['400'],
   variable: '--font-tale-mono',
   display: 'swap',
+  fallback: ['Courier New', 'monospace'],
 });
 
 export const metadata: Metadata = {
