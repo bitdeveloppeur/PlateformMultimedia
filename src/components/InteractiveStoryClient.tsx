@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { Story } from '@/types';
 import YennengaStage from './YennengaStage';
 import { getStageBook } from '@/data/scenes';
+import InteractiveSceneCanvas from './InteractiveSceneCanvas';
 import '../app/contes.css';
 
 interface ContePageProps {
@@ -16,6 +17,7 @@ export default function ContePage({ story }: ContePageProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedLang, setSelectedLang] = useState<'fr' | 'moore' | 'fulfulde' | 'dioula'>('fr');
   const [currentTime, setCurrentTime] = useState(0);
+  const [actionCompleted, setActionCompleted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const chapters = story.chapters;
@@ -76,6 +78,7 @@ export default function ContePage({ story }: ContePageProps) {
   // Navigation pages
   const goToPage = (pageIndex: number) => {
     setCurrentPage(pageIndex);
+    setActionCompleted(false); // Réinitialiser l'état d'action pour la nouvelle page
     // TODO: chercher le timestamp du chapitre et sauter à ce moment dans l'audio
   };
   
@@ -124,18 +127,73 @@ export default function ContePage({ story }: ContePageProps) {
         {/* Design livre ouvert pour TOUS les contes */}
         <>
           <div className="livre-double">
-            {/* Page gauche - Image de couverture */}
+            {/* Page gauche - Canvas interactif ou Image de couverture */}
             <div className="page-gauche-interactive">
-              <div style={{
-                width: '100%',
-                height: '100%',
-                background: story.id === 'yennenga-mere-des-moose' 
-                  ? `url(/images/covers/mzRNU.png) center/cover`
-                  : story.id === 'le-lievre-et-la-tortue'
-                  ? `url(/images/covers/oaLPy.png) center/cover`
-                  : `url(/images/covers/kUm12.png) center/cover`,
-                borderRadius: '8px 0 0 8px',
-              }}></div>
+              {book && currentScene ? (
+                <InteractiveSceneCanvas
+                  page={currentScene}
+                  stageWidth={1600}
+                  stageHeight={900}
+                  storyRegion={{
+                    latitude: story.region.coordinates.latitude,
+                    longitude: story.region.coordinates.longitude,
+                  }}
+                  onActionComplete={() => {
+                    // Marquer l'action comme complétée
+                    setActionCompleted(true);
+                    // Reprendre l'audio si en pause
+                    if (audioRef.current && !isPlaying) {
+                      audioRef.current.play();
+                      setIsPlaying(true);
+                    }
+                  }}
+                />
+              ) : (
+                <div style={{
+                  width: '100%',
+                  height: '100%',
+                  background: story.id === 'yennenga-mere-des-moose' 
+                    ? `url(/images/covers/mzRNU.png) center/cover`
+                    : story.id === 'le-lievre-et-la-tortue'
+                    ? `url(/images/covers/oaLPy.png) center/cover`
+                    : `url(/images/covers/kUm12.png) center/cover`,
+                  borderRadius: '8px 0 0 8px',
+                }}></div>
+              )}
+              
+              {/* Boutons navigation à l'intérieur de la zone SVG */}
+              <button 
+                className="page-nav prev"
+                onClick={() => goToPage(Math.max(0, currentPage - 1))}
+                disabled={currentPage === 0}
+                style={{ opacity: currentPage === 0 ? 0.3 : 1 }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M19 12H5m6-6-6 6 6 6"/>
+                </svg>
+              </button>
+              
+              <button 
+                className="page-nav next"
+                onClick={() => {
+                  // Vérifier si l'action est complétée avant de continuer
+                  if (currentScene?.act && !actionCompleted) {
+                    return; // Bloquer la navigation
+                  }
+                  goToPage(Math.min(chapters.length - 1, currentPage + 1));
+                }}
+                disabled={currentPage === chapters.length - 1}
+                style={{ 
+                  opacity: currentPage === chapters.length - 1 ? 0.3 : 
+                           (currentScene?.act && !actionCompleted) ? 0.5 : 1,
+                  cursor: (currentScene?.act && !actionCompleted) ? 'not-allowed' : 'pointer'
+                }}
+                title={currentScene?.act && !actionCompleted ? "Complète l'action d'abord !" : undefined}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14m-6-6 6 6-6 6"/>
+                </svg>
+              </button>
             </div>
             
             {/* Page droite - texte */}
@@ -157,32 +215,39 @@ export default function ContePage({ story }: ContePageProps) {
                 </svg>
                 {isPlaying ? 'Pause' : 'Écouter'}
               </button>
+              
+              {/* Navigation mobile (en bas de la page droite) */}
+              <div className="page-mobile-nav">
+                <button 
+                  onClick={() => goToPage(Math.max(0, currentPage - 1))}
+                  disabled={currentPage === 0}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M19 12H5m6-6-6 6 6 6"/>
+                  </svg>
+                  Précédent
+                </button>
+                
+                <button 
+                  onClick={() => {
+                    if (currentScene?.act && !actionCompleted) {
+                      return;
+                    }
+                    goToPage(Math.min(chapters.length - 1, currentPage + 1));
+                  }}
+                  disabled={currentPage === chapters.length - 1 || (!!currentScene?.act && !actionCompleted)}
+                >
+                  Suivant
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M5 12h14m-6-6 6 6-6 6"/>
+                  </svg>
+                </button>
+              </div>
             </div>
             
             {/* Pli central */}
             <div className="livre-pli" />
           </div>
-          
-          {/* Boutons navigation */}
-          <button 
-            className="page-nav prev"
-            onClick={() => goToPage(Math.max(0, currentPage - 1))}
-            disabled={currentPage === 0}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M19 12H5m6-6-6 6 6 6"/>
-            </svg>
-          </button>
-          
-          <button 
-            className="page-nav next"
-            onClick={() => goToPage(Math.min(chapters.length - 1, currentPage + 1))}
-            disabled={currentPage === chapters.length - 1}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14m-6-6 6 6-6 6"/>
-            </svg>
-          </button>
         </>
       </div>
 

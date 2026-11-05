@@ -1,0 +1,100 @@
+{
+  "storyId": "les-ruines-de-lorepeni",
+  "stage": { "width": 1600, "height": 900 },
+  "goldBarsPos": [[400, 500], [600, 520], [800, 500]],
+  "bricksPos": [
+    [200, 400], [300, 400], [400, 400], [500, 400], [600, 400], [700, 400], [800, 400], [900, 400],
+    [200, 500], [300, 500], [400, 500], [600, 500], [700, 500], [800, 500], [900, 500],
+    [200, 600], [300, 600], [400, 600], [500, 600], [600, 600], [700, 600], [800, 600], [900, 600]
+  ],
+  "coverTitle": "Loropéni",
+  "coverSubtitle": "les murs de l'or",
+  "pages": [
+    {
+      "chap": "Couverture",
+      "text": "L'histoire des ruines mystérieuses du pays lobi. Prêt·e ? Appuie sur la flèche.",
+      "task": "",
+      "sky": "#D4A574",
+      "night": 0,
+      "stars": 0,
+      "sun": { "x": -100, "y": -80, "o": 1 },
+      "ruins": { "x": 400, "y": 300, "s": 1.2 },
+      "tree": { "x": 1200, "y": 400, "s": 1 },
+      "act": null,
+      "cover": true,
+      "mapCoords": { "lng": -3.6653, "lat": 10.4831, "zoom": 9, "pitch": 55, "bearing": -15 }
+    },
+    {
+      "chap": "1 · L'or du Lobi",
+      "text": "Les chercheurs situent l'apogée du site entre le XIVᵉ et le XVIIᵉ siècle, lorsque l'or du pays lobi alimentait les grandes caravanes du Sahara.",
+      "task": "Touche les lingots d'or (3 fois)",
+      "sky": "#D4A574",
+      "night": 0,
+      "stars": 0,
+      "sun": { "x": -120, "y": -60, "o": 1 },
+      "ruins": null,
+      "tree": { "x": 200, "y": 420, "s": 0.9 },
+      "donkey": { "x": 600, "y": 450, "s": 1.1 },
+      "act": "gold",
+      "mapCoords": { "lng": -3.6653, "lat": 10.4831, "zoom": 10, "pitch": 60, "bearing": -20 }
+    },
+    {
+      "chap": "2 · Construire la forteresse",
+      "text": "Des murailles de blocs de latérite assemblés à sec, sans mortier, hautes par endroits de six mètres.",
+      "task": "Clique sur les briques pour construire le mur (8 fois)",
+      "sky": "#D4A574",
+      "night": 0,
+      "stars": 0,
+      "sun": { "x": -150, "y": -40, "o": 1 },
+      "ruins": null,
+      "tree": { "x": 1300, "y": 420, "s": 0.85 },
+      "person": { "x": 350, "y": 480, "s": 1 },
+      "act": "bricks",
+      "mapCoords": { "lng": -3.6653, "lat": 10.4831, "zoom": 11, "pitch": 65, "bearing": -10 }
+    },
+    {
+      "chap": "3 · Les caravanes",
+      "text": "Les Lohron, marchands d'or, y auraient fait de Loropéni un entrepôt fortifié — un nœud précieux entre la forêt du sud et les pistes du désert.",
+      "task": "Touche l'âne chargé d'or",
+      "sky": "#E8B67E",
+      "night": 0.1,
+      "stars": 0,
+      "sun": { "x": -200, "y": 20, "o": 0.9 },
+      "ruins": { "x": 300, "y": 320, "s": 1 },
+      "tree": { "x": 1200, "y": 420, "s": 0.9 },
+      "donkey": { "x": 700, "y": 450, "s": 1.2 },
+      "act": "donkey",
+      "mapCoords": { "lng": -3.6653, "lat": 10.4831, "zoom": 10.5, "pitch": 58, "bearing": 0 }
+    },
+    {
+      "chap": "4 · L'abandon",
+      "text": "Quand les routes de l'or déclinèrent, la forteresse se vida lentement. La forêt reprit ses droits.",
+      "task": "Regarde l'oiseau s'envoler",
+      "sky": "#C9935A",
+      "night": 0.3,
+      "stars": 0,
+      "sun": { "x": -300, "y": 80, "o": 0.7 },
+      "ruins": { "x": 400, "y": 300, "s": 1.1 },
+      "tree": { "x": 200, "y": 420, "s": 1 },
+      "bird": { "x": 800, "y": 300, "s": 1 },
+      "bushes": { "x": 1100, "y": 550, "s": 1 },
+      "act": "bird",
+      "mapCoords": { "lng": -3.6653, "lat": 10.4831, "zoom": 9.5, "pitch": 50, "bearing": -25 }
+    },
+    {
+      "chap": "5 · Patrimoine mondial",
+      "text": "En 2009, les Ruines de Loropéni sont inscrites au patrimoine mondial de l'UNESCO — la première inscription du Burkina Faso.",
+      "task": "Touche l'étoile du patrimoine mondial",
+      "sky": "#F0D8A8",
+      "night": 0,
+      "stars": 0,
+      "sun": { "x": -80, "y": -100, "o": 1 },
+      "ruins": { "x": 400, "y": 300, "s": 1.3 },
+      "tree": { "x": 150, "y": 420, "s": 0.9 },
+      "tree2": { "x": 1300, "y": 420, "s": 0.95 },
+      "star": { "x": 800, "y": 200, "s": 1.2 },
+      "act": "star",
+      "mapCoords": { "lng": -3.6653, "lat": 10.4831, "zoom": 12, "pitch": 70, "bearing": -30 }
+    }
+  ]
+}

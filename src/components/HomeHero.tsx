@@ -27,12 +27,6 @@ export default function HomeHero({ stories }: HomeHeroProps) {
           </span>
           <strong>Voix du Faso</strong>
         </div>
-        <nav className="hero-links">
-          <a href="/atlas">Atlas</a>
-          <a href="#conteurs">Conteurs</a>
-          <a href="#langues">Langues</a>
-        </nav>
-        <button className="hero-cta">Proposer un récit</button>
       </header>
 
       {/* Hero Content */}
@@ -130,12 +124,6 @@ export default function HomeHero({ stories }: HomeHeroProps) {
             4 LANGUES  ·  
             {Math.round(stories.reduce((n, s) => n + (s.languages[0]?.durationHint ?? 0), 0) / 60)} MIN D'ÉCOUTE
           </p>
-          <Link href="/atlas" className="atlas-link">
-            <span>Découvrir sur la carte</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14m-6-6 6 6-6 6" />
-            </svg>
-          </Link>
         </footer>
       </main>
     </div>
