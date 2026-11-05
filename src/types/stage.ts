@@ -25,7 +25,7 @@ export interface StagePose {
 }
 
 /** Micro-tâches tactiles connues du moteur (voir InteractiveStory). */
-export type StageAct = 'gallop' | 'king' | 'okra' | 'stars' | 'bushes' | 'baby' | 'gold' | 'bricks' | 'donkey' | 'bird' | 'star';
+export type StageAct = 'gallop' | 'king' | 'okra' | 'stars' | 'bushes' | 'baby' | 'gold' | 'bricks' | 'donkey' | 'bird' | 'star' | 'stick' | 'race' | 'wake' | 'turtles' | 'balafon';
 
 /** Coordonnées de caméra pour animer la carte 3D. */
 export interface MapCoords {
@@ -73,6 +73,19 @@ export interface StageScene {
   bushes?: StagePose | null;
   /** Étoile UNESCO */
   star?: StagePose | null;
+  /** Éléments du Lièvre et la Tortue */
+  grenier?: StagePose | null;
+  moon?: StagePose | null;
+  storyteller?: StagePose | null;
+  hare?: StagePose | null;
+  turtle?: StagePose | null;
+  baobab?: StagePose | null;
+  karite?: StagePose | null;
+  sleepingHare?: StagePose | null;
+  turtleGroup?: StagePose | null;
+  balafon?: StagePose | null;
+  stick?: StagePose | null;
+  savana?: StagePose | null;
   /** Tâche de la page. */
   act?: StageAct | null;
   /** Page de couverture (titre masqué, texte d'invitation). */
@@ -86,17 +99,19 @@ export interface StageBook {
   storyId: string;
   stage: { width: number; height: number };
   /** Positions des étoiles à allumer (tâche « stars »). */
-  starPos: [number, number][];
+  starPos?: [number, number][];
   /** Emplacements de semis du gombo (tâche « okra »). */
-  holes: [number, number][];
+  holes?: [number, number][];
   /** Positions des buissons (tâche « bushes »). */
-  bushPos: [number, number][];
+  bushPos?: [number, number][];
   /** Indice du buisson cachant le chasseur. */
-  hiddenBushIndex: number;
+  hiddenBushIndex?: number;
   /** Texte de la bulle du roi (tâche « king »). */
-  bubbleText: string;
+  bubbleText?: string;
   /** Titre/sous-titre de couverture. */
   coverTitle: string;
   coverSubtitle: string;
+  /** Positions des tortues cachées (tâche « turtles »). */
+  turtlePositions?: [number, number][];
   pages: StageScene[];
 }

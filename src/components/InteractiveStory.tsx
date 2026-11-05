@@ -194,9 +194,9 @@ export default function InteractiveStory({ story, book, audio }: InteractiveStor
         const p = book.pages[page];
         if (p.act === 'gallop' && p.rider) setHint({ x: p.rider.x + 300 * (p.rider.s || 1), y: p.rider.y + 260 * (p.rider.s || 1), r: 110 });
         else if (p.act === 'king' && p.king) setHint({ x: p.king.x + 170, y: p.king.y + 190, r: 110 });
-        else if (p.act === 'okra') setHint({ x: book.holes[0][0], y: book.holes[0][1] - 30, r: 60 });
-        else if (p.act === 'stars') setHint({ x: book.starPos[0][0], y: book.starPos[0][1], r: 50 });
-        else if (p.act === 'bushes') setHint({ x: book.bushPos[0][0] + 171, y: book.bushPos[0][1] + 126, r: 120 });
+        else if (p.act === 'okra' && book.holes?.[0]) setHint({ x: book.holes[0][0], y: book.holes[0][1] - 30, r: 60 });
+        else if (p.act === 'stars' && book.starPos?.[0]) setHint({ x: book.starPos[0][0], y: book.starPos[0][1], r: 50 });
+        else if (p.act === 'bushes' && book.bushPos?.[0]) setHint({ x: book.bushPos[0][0] + 171, y: book.bushPos[0][1] + 126, r: 120 });
         else if (p.act === 'baby' && p.mother) setHint({ x: p.mother.x + 360 * (p.mother.s || 1), y: p.mother.y + 100 * (p.mother.s || 1), r: 90 });
       }, 950);
       return () => clearTimeout(timer);
@@ -276,7 +276,7 @@ export default function InteractiveStory({ story, book, audio }: InteractiveStor
       const plant = plantRefs.current[tapsRef.current];
       plant?.classList.add('ikt-grown');
       tapsRef.current++;
-      if (tapsRef.current < book.holes.length) {
+      if (book.holes && tapsRef.current < book.holes.length) {
         const [x, y] = book.holes[tapsRef.current];
         setHint({ x, y: y - 30, r: 60 });
       } else {
@@ -298,11 +298,11 @@ export default function InteractiveStory({ story, book, audio }: InteractiveStor
       star.classList.replace('ikt-off', 'ikt-on');
       const lit = starRefs.current.filter((s) => s?.classList.contains('ikt-on')).length;
       const nextIndex = starRefs.current.findIndex((s) => s?.classList.contains('ikt-off'));
-      if (nextIndex >= 0) {
+      if (nextIndex >= 0 && book.starPos) {
         const [x, y] = book.starPos[nextIndex];
         setHint({ x, y, r: 50 });
       }
-      if (lit === book.starPos.length) {
+      if (book.starPos && lit === book.starPos.length) {
         setHint(null);
         setForestX((scene.forest?.x ?? 1700) - 300);
         gallop(3000);
@@ -321,7 +321,7 @@ export default function InteractiveStory({ story, book, audio }: InteractiveStor
         complete();
       } else {
         const next = bushRefs.current.findIndex((b) => !b?.classList.contains('ikt-open'));
-        if (next >= 0) {
+        if (next >= 0 && book.bushPos) {
           const [x, y] = book.bushPos[next];
           setHint({ x: x + 171, y: y + 126, r: 120 });
         }
@@ -407,7 +407,7 @@ export default function InteractiveStory({ story, book, audio }: InteractiveStor
               style={{ mixBlendMode: 'multiply' }}
             />
             <g style={{ opacity: scene.act === 'stars' ? 1 : 0 }} className="ikt-layer">
-              {book.starPos.map(([x, y], index) => (
+              {(book.starPos || []).map(([x, y], index) => (
                 <g key={index} transform={`translate(${x} ${y})`} role="button" tabIndex={-1} aria-label={`Étoile ${index + 1}`} className="ikt-tap" onClick={() => handleStarClick(index)}>
                   <path ref={(el) => { starRefs.current[index] = el; }} className="ikt-star ikt-off" d={STAR_PATH} fill="#E0A84B" />
                   <circle r="46" fill="transparent" />
@@ -458,7 +458,7 @@ export default function InteractiveStory({ story, book, audio }: InteractiveStor
               style={{ display: scene.act === 'okra' ? '' : 'none' }}
             />
             <g className="ikt-layer" style={{ opacity: scene.act === 'okra' ? 1 : 0, pointerEvents: scene.act === 'okra' ? 'auto' : 'none' }}>
-              {book.holes.map(([x, y], index) => (
+              {(book.holes || []).map(([x, y], index) => (
                 <g key={index} transform={`translate(${x - 140} ${y - 430}) scale(1.4)`}>
                   <g
                     ref={(el) => { plantRefs.current[index] = el; }}
@@ -478,7 +478,7 @@ export default function InteractiveStory({ story, book, audio }: InteractiveStor
                 pointerEvents: scene.act === 'bushes' && !isDone ? 'auto' : 'none',
               }}
             >
-              {book.bushPos.map(([x, y], index) => (
+              {(book.bushPos || []).map(([x, y], index) => (
                 <g key={index} transform={`translate(${x} ${y}) scale(.9)`} role="button" tabIndex={-1} aria-label={`Buisson ${index + 1}`} className="ikt-tap" onClick={() => handleBushClick(index)}>
                   <g
                     ref={(el) => { bushRefs.current[index] = el; }}

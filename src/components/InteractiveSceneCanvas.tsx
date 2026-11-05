@@ -142,6 +142,57 @@ export default function InteractiveSceneCanvas({
         }
         break;
 
+      case 'stick':
+        // Frapper le bâton 3 fois
+        if (element === 'stick') {
+          const newProgress = Math.min(actionState.progress + 33.33, 100);
+          setActionState({ 
+            completed: newProgress >= 100, 
+            progress: newProgress 
+          });
+          if (newProgress >= 100) {
+            setTimeout(onActionComplete, 1000);
+          }
+        }
+        break;
+
+      case 'race':
+        // Lancer la course
+        if (element === 'hare') {
+          setActionState({ completed: true, progress: 100 });
+          setTimeout(onActionComplete, 1000);
+        }
+        break;
+
+      case 'wake':
+        // Réveiller le lièvre
+        if (element === 'sleeping-hare') {
+          setActionState({ completed: true, progress: 100 });
+          setTimeout(onActionComplete, 1000);
+        }
+        break;
+
+      case 'turtles':
+        // Trouver les 5 tortues
+        if (element === 'turtle-hidden') {
+          const newProgress = Math.min(actionState.progress + 20, 100);
+          setActionState({ 
+            completed: newProgress >= 100, 
+            progress: newProgress 
+          });
+          if (newProgress >= 100) {
+            setTimeout(onActionComplete, 1000);
+          }
+        }
+        break;
+
+      case 'balafon':
+        if (element === 'balafon') {
+          setActionState({ completed: true, progress: 100 });
+          setTimeout(onActionComplete, 1000);
+        }
+        break;
+
       default:
         // Pas d'interaction, passer directement
         setActionState({ completed: true, progress: 100 });
@@ -701,6 +752,366 @@ export default function InteractiveSceneCanvas({
                 opacity: i < (actionState.progress / 12.5) ? 1 : 0.3,
                 transition: 'all 0.3s ease-out',
                 filter: i < (actionState.progress / 12.5) ? 'drop-shadow(0 2px 6px rgba(181,74,38,0.6))' : 'none',
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════
+          ÉLÉMENTS LE LIÈVRE ET LA TORTUE
+          ═══════════════════════════════════════════════════════════ */}
+
+      {/* Paysage de savane (fond) */}
+      {page.savana && (
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: '100%',
+            height: '100%',
+            backgroundImage: 'url(/stage/le-lievre-et-la-tortue/paysage_savane.svg)',
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            zIndex: 1,
+          }}
+        />
+      )}
+
+      {/* Grenier à mil */}
+      {page.grenier && (
+        <div
+          style={{
+            position: 'absolute',
+            left: `${(page.grenier.x / stageWidth) * 100}%`,
+            top: `${(page.grenier.y / stageHeight) * 100}%`,
+            width: `${200 * (page.grenier.s || 1)}px`,
+            height: `${250 * (page.grenier.s || 1)}px`,
+            backgroundImage: 'url(/stage/le-lievre-et-la-tortue/grenier_a_mil.svg)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            opacity: page.grenier.o ?? 1,
+            transition: 'all 0.8s ease-out',
+            zIndex: 8,
+          }}
+        />
+      )}
+
+      {/* Lune */}
+      {page.moon && (
+        <div
+          style={{
+            position: 'absolute',
+            left: `${(page.moon.x / stageWidth) * 100}%`,
+            top: `${(page.moon.y / stageHeight) * 100}%`,
+            width: `${100 * (page.moon.s || 1)}px`,
+            height: `${100 * (page.moon.s || 1)}px`,
+            backgroundImage: 'url(/stage/le-lievre-et-la-tortue/lune.svg)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            opacity: page.moon.o ?? 1,
+            transition: 'all 0.8s ease-out',
+            zIndex: 3,
+          }}
+        />
+      )}
+
+      {/* Conteur */}
+      {page.storyteller && (
+        <div
+          style={{
+            position: 'absolute',
+            left: `${(page.storyteller.x / stageWidth) * 100}%`,
+            top: `${(page.storyteller.y / stageHeight) * 100}%`,
+            width: `${160 * (page.storyteller.s || 1)}px`,
+            height: `${200 * (page.storyteller.s || 1)}px`,
+            backgroundImage: 'url(/stage/le-lievre-et-la-tortue/conteur.svg)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            opacity: page.storyteller.o ?? 1,
+            transition: 'all 0.8s ease-out',
+            zIndex: 10,
+          }}
+          title="Le conteur"
+        />
+      )}
+
+      {/* Bâton du conteur */}
+      {page.stick && (
+        <div
+          onClick={() => handleInteraction('stick')}
+          style={{
+            position: 'absolute',
+            left: `${(page.stick.x / stageWidth) * 100}%`,
+            top: `${(page.stick.y / stageHeight) * 100}%`,
+            width: `${60 * (page.stick.s || 1)}px`,
+            height: `${250 * (page.stick.s || 1)}px`,
+            backgroundImage: 'url(/stage/le-lievre-et-la-tortue/baton_conteur.svg)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            cursor: page.act === 'stick' ? 'pointer' : 'default',
+            transition: 'all 0.3s ease-out',
+            zIndex: 50,
+            filter: page.act === 'stick' ? 'drop-shadow(0 4px 12px rgba(224,168,75,0.5))' : 'none',
+            transform: actionState.progress > 0 ? `rotate(${actionState.progress * 0.3}deg)` : 'none',
+          }}
+          onMouseEnter={(e) => {
+            if (page.act === 'stick') {
+              e.currentTarget.style.filter = 'drop-shadow(0 8px 20px rgba(224,168,75,0.8)) brightness(1.2)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (page.act === 'stick') {
+              e.currentTarget.style.filter = 'drop-shadow(0 4px 12px rgba(224,168,75,0.5))';
+            }
+          }}
+          title="Bâton du conteur"
+        />
+      )}
+
+      {/* Lièvre */}
+      {page.hare && (
+        <div
+          onClick={() => handleInteraction('hare')}
+          style={{
+            position: 'absolute',
+            left: `${(page.hare.x / stageWidth) * 100}%`,
+            top: `${(page.hare.y / stageHeight) * 100}%`,
+            width: `${120 * (page.hare.s || 1)}px`,
+            height: `${180 * (page.hare.s || 1)}px`,
+            backgroundImage: 'url(/stage/le-lievre-et-la-tortue/lievre.svg)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            opacity: page.hare.o ?? 1,
+            cursor: page.act === 'race' ? 'pointer' : 'default',
+            transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+            zIndex: 10,
+            filter: page.act === 'race' ? 'drop-shadow(0 4px 12px rgba(224,168,75,0.5))' : 'none',
+            transform: actionState.completed && page.act === 'race' ? 'translateX(400px) scale(1.2)' : 'none',
+          }}
+          onMouseEnter={(e) => {
+            if (page.act === 'race') {
+              e.currentTarget.style.filter = 'drop-shadow(0 8px 20px rgba(224,168,75,0.8)) brightness(1.15)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (page.act === 'race') {
+              e.currentTarget.style.filter = 'drop-shadow(0 4px 12px rgba(224,168,75,0.5))';
+            }
+          }}
+          title="Le lièvre rapide"
+        />
+      )}
+
+      {/* Tortue */}
+      {page.turtle && (
+        <div
+          style={{
+            position: 'absolute',
+            left: `${(page.turtle.x / stageWidth) * 100}%`,
+            top: `${(page.turtle.y / stageHeight) * 100}%`,
+            width: `${140 * (page.turtle.s || 1)}px`,
+            height: `${100 * (page.turtle.s || 1)}px`,
+            backgroundImage: 'url(/stage/le-lievre-et-la-tortue/tortue.svg)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            opacity: page.turtle.o ?? 1,
+            transition: 'all 0.8s ease-out',
+            zIndex: 10,
+          }}
+          title="La tortue persévérante"
+        />
+      )}
+
+      {/* Baobab */}
+      {page.baobab && (
+        <div
+          style={{
+            position: 'absolute',
+            left: `${(page.baobab.x / stageWidth) * 100}%`,
+            top: `${(page.baobab.y / stageHeight) * 100}%`,
+            width: `${250 * (page.baobab.s || 1)}px`,
+            height: `${320 * (page.baobab.s || 1)}px`,
+            backgroundImage: 'url(/stage/le-lievre-et-la-tortue/baobab.svg)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            opacity: page.baobab.o ?? 1,
+            transition: 'all 0.8s ease-out',
+            zIndex: 8,
+          }}
+          title="Baobab"
+        />
+      )}
+
+      {/* Karité */}
+      {page.karite && (
+        <div
+          style={{
+            position: 'absolute',
+            left: `${(page.karite.x / stageWidth) * 100}%`,
+            top: `${(page.karite.y / stageHeight) * 100}%`,
+            width: `${200 * (page.karite.s || 1)}px`,
+            height: `${260 * (page.karite.s || 1)}px`,
+            backgroundImage: 'url(/stage/le-lievre-et-la-tortue/karite.svg)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            opacity: page.karite.o ?? 1,
+            transition: 'all 0.8s ease-out',
+            zIndex: 8,
+          }}
+          title="Arbre à karité"
+        />
+      )}
+
+      {/* Lièvre endormi */}
+      {page.sleepingHare && (
+        <div
+          onClick={() => handleInteraction('sleeping-hare')}
+          style={{
+            position: 'absolute',
+            left: `${(page.sleepingHare.x / stageWidth) * 100}%`,
+            top: `${(page.sleepingHare.y / stageHeight) * 100}%`,
+            width: `${200 * (page.sleepingHare.s || 1)}px`,
+            height: `${120 * (page.sleepingHare.s || 1)}px`,
+            backgroundImage: 'url(/stage/le-lievre-et-la-tortue/lievre_endormi.svg)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            cursor: page.act === 'wake' ? 'pointer' : 'default',
+            transition: 'all 0.5s ease-out',
+            zIndex: 50,
+            filter: page.act === 'wake' ? 'drop-shadow(0 4px 12px rgba(224,168,75,0.5))' : 'none',
+            transform: actionState.completed && page.act === 'wake' ? 'scale(1.2) translateY(-20px)' : 'none',
+            opacity: actionState.completed && page.act === 'wake' ? 0.5 : 1,
+          }}
+          onMouseEnter={(e) => {
+            if (page.act === 'wake') {
+              e.currentTarget.style.filter = 'drop-shadow(0 8px 20px rgba(224,168,75,0.8)) brightness(1.2)';
+              e.currentTarget.style.transform = 'scale(1.15)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (page.act === 'wake') {
+              e.currentTarget.style.filter = 'drop-shadow(0 4px 12px rgba(224,168,75,0.5))';
+              e.currentTarget.style.transform = 'scale(1)';
+            }
+          }}
+          title="Réveille le lièvre !"
+        />
+      )}
+
+      {/* Groupe de tortues */}
+      {page.turtleGroup && (
+        <div
+          style={{
+            position: 'absolute',
+            left: `${(page.turtleGroup.x / stageWidth) * 100}%`,
+            top: `${(page.turtleGroup.y / stageHeight) * 100}%`,
+            width: `${280 * (page.turtleGroup.s || 1)}px`,
+            height: `${150 * (page.turtleGroup.s || 1)}px`,
+            backgroundImage: 'url(/stage/le-lievre-et-la-tortue/groupe_tortues.svg)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            transition: 'all 0.8s ease-out',
+            zIndex: 10,
+          }}
+          title="Famille de tortues"
+        />
+      )}
+
+      {/* Balafon */}
+      {page.balafon && (
+        <div
+          onClick={() => handleInteraction('balafon')}
+          style={{
+            position: 'absolute',
+            left: `${(page.balafon.x / stageWidth) * 100}%`,
+            top: `${(page.balafon.y / stageHeight) * 100}%`,
+            width: `${240 * (page.balafon.s || 1)}px`,
+            height: `${140 * (page.balafon.s || 1)}px`,
+            backgroundImage: 'url(/stage/le-lievre-et-la-tortue/balafon.svg)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            cursor: page.act === 'balafon' ? 'pointer' : 'default',
+            transition: 'all 0.5s ease-out',
+            zIndex: 50,
+            filter: page.act === 'balafon' ? 'drop-shadow(0 4px 12px rgba(224,168,75,0.5))' : 'none',
+            transform: actionState.completed && page.act === 'balafon' ? 'scale(1.2)' : 'none',
+          }}
+          onMouseEnter={(e) => {
+            if (page.act === 'balafon') {
+              e.currentTarget.style.filter = 'drop-shadow(0 8px 20px rgba(224,168,75,0.8)) brightness(1.2)';
+              e.currentTarget.style.transform = 'scale(1.15)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (page.act === 'balafon') {
+              e.currentTarget.style.filter = 'drop-shadow(0 4px 12px rgba(224,168,75,0.5))';
+              e.currentTarget.style.transform = 'scale(1)';
+            }
+          }}
+          title="Touche le balafon !"
+        />
+      )}
+
+      {/* Zone pour trouver les tortues cachées */}
+      {page.act === 'turtles' && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '15%',
+            left: '10%',
+            width: '80%',
+            height: '35%',
+            display: 'flex',
+            gap: '5%',
+            alignItems: 'center',
+            justifyContent: 'space-around',
+            zIndex: 50,
+          }}
+        >
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={i}
+              onClick={() => handleInteraction('turtle-hidden')}
+              style={{
+                width: '80px',
+                height: '60px',
+                backgroundImage: 'url(/stage/le-lievre-et-la-tortue/tortue.svg)',
+                backgroundSize: 'contain',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                cursor: 'pointer',
+                opacity: i < (actionState.progress / 20) ? 0.3 : 1,
+                transition: 'all 0.4s ease-out',
+                filter: i < (actionState.progress / 20) 
+                  ? 'drop-shadow(0 0 10px rgba(34,139,34,0.8))' 
+                  : 'drop-shadow(0 2px 8px rgba(0,0,0,0.3))',
+                transform: i < (actionState.progress / 20) ? 'scale(0.7)' : 'scale(1)',
+              }}
+              onMouseEnter={(e) => {
+                if (i >= (actionState.progress / 20)) {
+                  e.currentTarget.style.transform = 'scale(1.3) translateY(-10px)';
+                  e.currentTarget.style.filter = 'drop-shadow(0 6px 15px rgba(110,122,52,0.6)) brightness(1.2)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (i >= (actionState.progress / 20)) {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.filter = 'drop-shadow(0 2px 8px rgba(0,0,0,0.3))';
+                }
               }}
             />
           ))}
