@@ -422,6 +422,291 @@ export default function InteractiveSceneCanvas({
         </div>
       )}
 
+      {/* ═══════════════════════════════════════════════════════════
+          ÉLÉMENTS LOROPÉNI
+          ═══════════════════════════════════════════════════════════ */}
+
+      {/* Ruines de Loropéni */}
+      {page.ruins && (
+        <div
+          style={{
+            position: 'absolute',
+            left: `${(page.ruins.x / stageWidth) * 100}%`,
+            top: `${(page.ruins.y / stageHeight) * 100}%`,
+            width: `${850 * (page.ruins.s || 1)}px`,
+            height: `${220 * (page.ruins.s || 1)}px`,
+            backgroundImage: 'url(/stage/les-ruines-de-lorepeni/mur.svg)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            transition: 'all 0.8s ease-out',
+            zIndex: 5,
+          }}
+          title="Les ruines de Loropéni"
+        />
+      )}
+
+      {/* Arbre/Baobab */}
+      {page.tree && (
+        <div
+          style={{
+            position: 'absolute',
+            left: `${(page.tree.x / stageWidth) * 100}%`,
+            top: `${(page.tree.y / stageHeight) * 100}%`,
+            width: `${220 * (page.tree.s || 1)}px`,
+            height: `${310 * (page.tree.s || 1)}px`,
+            backgroundImage: 'url(/stage/les-ruines-de-lorepeni/arbre.svg)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            transition: 'all 0.8s ease-out',
+            zIndex: 8,
+          }}
+        />
+      )}
+
+      {/* Deuxième arbre */}
+      {page.tree2 && (
+        <div
+          style={{
+            position: 'absolute',
+            left: `${(page.tree2.x / stageWidth) * 100}%`,
+            top: `${(page.tree2.y / stageHeight) * 100}%`,
+            width: `${220 * (page.tree2.s || 1)}px`,
+            height: `${310 * (page.tree2.s || 1)}px`,
+            backgroundImage: 'url(/stage/les-ruines-de-lorepeni/arbre.svg)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            transition: 'all 0.8s ease-out',
+            zIndex: 8,
+          }}
+        />
+      )}
+
+      {/* Âne de caravane */}
+      {page.donkey && (
+        <div
+          onClick={() => handleInteraction('donkey')}
+          style={{
+            position: 'absolute',
+            left: `${(page.donkey.x / stageWidth) * 100}%`,
+            top: `${(page.donkey.y / stageHeight) * 100}%`,
+            width: `${220 * (page.donkey.s || 1)}px`,
+            height: `${180 * (page.donkey.s || 1)}px`,
+            backgroundImage: 'url(/stage/les-ruines-de-lorepeni/ane.svg)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            cursor: page.act === 'donkey' ? 'pointer' : 'default',
+            transition: 'all 0.6s ease-out',
+            zIndex: 10,
+            filter: page.act === 'donkey' ? 'drop-shadow(0 4px 12px rgba(232,116,59,0.4))' : 'none',
+            transform: actionState.completed && page.act === 'donkey' ? 'translateX(50px) scale(1.1)' : 'none',
+          }}
+          onMouseEnter={(e) => {
+            if (page.act === 'donkey') {
+              e.currentTarget.style.filter = 'drop-shadow(0 8px 20px rgba(232,116,59,0.6)) brightness(1.1)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (page.act === 'donkey') {
+              e.currentTarget.style.filter = 'drop-shadow(0 4px 12px rgba(232,116,59,0.4))';
+            }
+          }}
+          title="Âne de caravane chargé d'or"
+        />
+      )}
+
+      {/* Personnage lobi */}
+      {page.person && (
+        <div
+          style={{
+            position: 'absolute',
+            left: `${(page.person.x / stageWidth) * 100}%`,
+            top: `${(page.person.y / stageHeight) * 100}%`,
+            width: `${80 * (page.person.s || 1)}px`,
+            height: `${150 * (page.person.s || 1)}px`,
+            backgroundImage: 'url(/stage/les-ruines-de-lorepeni/personnage.svg)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            transition: 'all 0.6s ease-out',
+            zIndex: 10,
+          }}
+          title="Bâtisseur lobi"
+        />
+      )}
+
+      {/* Oiseau */}
+      {page.bird && (
+        <div
+          onClick={() => handleInteraction('bird')}
+          style={{
+            position: 'absolute',
+            left: `${(page.bird.x / stageWidth) * 100}%`,
+            top: `${(page.bird.y / stageHeight) * 100}%`,
+            width: `${60 * (page.bird.s || 1)}px`,
+            height: `${40 * (page.bird.s || 1)}px`,
+            backgroundImage: 'url(/stage/les-ruines-de-lorepeni/oiseau.svg)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            cursor: page.act === 'bird' ? 'pointer' : 'default',
+            transition: 'all 0.5s ease-out',
+            zIndex: 50,
+            filter: page.act === 'bird' ? 'drop-shadow(0 4px 12px rgba(42,29,20,0.4))' : 'none',
+            transform: actionState.completed && page.act === 'bird' ? 'translateY(-150px) translateX(100px) scale(0.8)' : 'none',
+            opacity: actionState.completed && page.act === 'bird' ? 0 : 1,
+          }}
+          onMouseEnter={(e) => {
+            if (page.act === 'bird') {
+              e.currentTarget.style.filter = 'drop-shadow(0 8px 20px rgba(42,29,20,0.6)) brightness(1.2)';
+              e.currentTarget.style.transform = 'scale(1.3) translateY(-10px)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (page.act === 'bird') {
+              e.currentTarget.style.filter = 'drop-shadow(0 4px 12px rgba(42,29,20,0.4))';
+              e.currentTarget.style.transform = 'scale(1)';
+            }
+          }}
+          title="Oiseau de la forêt"
+        />
+      )}
+
+      {/* Végétation/buissons de Loropéni */}
+      {page.bushes && (
+        <div
+          style={{
+            position: 'absolute',
+            left: `${(page.bushes.x / stageWidth) * 100}%`,
+            top: `${(page.bushes.y / stageHeight) * 100}%`,
+            width: `${700 * (page.bushes.s || 1)}px`,
+            height: `${150 * (page.bushes.s || 1)}px`,
+            backgroundImage: 'url(/stage/les-ruines-de-lorepeni/vegetation.svg)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            transition: 'all 0.8s ease-out',
+            zIndex: 7,
+          }}
+        />
+      )}
+
+      {/* Étoile UNESCO */}
+      {page.star && (
+        <div
+          onClick={() => handleInteraction('star')}
+          style={{
+            position: 'absolute',
+            left: `${(page.star.x / stageWidth) * 100}%`,
+            top: `${(page.star.y / stageHeight) * 100}%`,
+            width: `${200 * (page.star.s || 1)}px`,
+            height: `${200 * (page.star.s || 1)}px`,
+            backgroundImage: 'url(/stage/les-ruines-de-lorepeni/etoile.svg)',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            cursor: page.act === 'star' ? 'pointer' : 'default',
+            transition: 'all 0.5s ease-out',
+            zIndex: 50,
+            filter: page.act === 'star' ? 'drop-shadow(0 4px 12px rgba(224,168,75,0.6))' : 'none',
+            transform: actionState.completed && page.act === 'star' ? 'scale(1.5) rotate(360deg)' : 'none',
+          }}
+          onMouseEnter={(e) => {
+            if (page.act === 'star') {
+              e.currentTarget.style.filter = 'drop-shadow(0 8px 30px rgba(224,168,75,0.9)) brightness(1.2)';
+              e.currentTarget.style.transform = 'scale(1.3) rotate(15deg)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (page.act === 'star') {
+              e.currentTarget.style.filter = 'drop-shadow(0 4px 12px rgba(224,168,75,0.6))';
+              e.currentTarget.style.transform = 'scale(1)';
+            }
+          }}
+          title="Patrimoine mondial UNESCO 2009"
+        />
+      )}
+
+      {/* Zone pour ramasser l'or */}
+      {page.act === 'gold' && (
+        <div
+          onClick={() => handleInteraction('gold-bar')}
+          style={{
+            position: 'absolute',
+            bottom: '25%',
+            left: '30%',
+            width: '40%',
+            height: '30%',
+            display: 'flex',
+            gap: '80px',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50,
+            cursor: 'pointer',
+          }}
+        >
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              style={{
+                width: '90px',
+                height: '60px',
+                backgroundImage: 'url(/stage/les-ruines-de-lorepeni/or.svg)',
+                backgroundSize: 'contain',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                opacity: i < (actionState.progress / 33.33) ? 0.3 : 1,
+                transition: 'all 0.4s ease-out',
+                filter: 'drop-shadow(0 4px 12px rgba(224,168,75,0.6))',
+                transform: i < (actionState.progress / 33.33) ? 'scale(0.5)' : 'scale(1)',
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Zone pour construire le mur */}
+      {page.act === 'bricks' && (
+        <div
+          onClick={() => handleInteraction('brick')}
+          style={{
+            position: 'absolute',
+            bottom: '20%',
+            left: '25%',
+            width: '50%',
+            height: '40%',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gridTemplateRows: 'repeat(2, 1fr)',
+            gap: '10px',
+            zIndex: 50,
+            cursor: 'pointer',
+            padding: '20px',
+            background: 'rgba(181, 74, 38, 0.15)',
+            borderRadius: '12px',
+            border: '3px dashed rgba(181, 74, 38, 0.5)',
+          }}
+        >
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={i}
+              style={{
+                backgroundImage: 'url(/stage/les-ruines-de-lorepeni/brique.svg)',
+                backgroundSize: 'contain',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                opacity: i < (actionState.progress / 12.5) ? 1 : 0.3,
+                transition: 'all 0.3s ease-out',
+                filter: i < (actionState.progress / 12.5) ? 'drop-shadow(0 2px 6px rgba(181,74,38,0.6))' : 'none',
+              }}
+            />
+          ))}
+        </div>
+      )}
+
       {/* Instruction d'interaction */}
       {page.task && !actionState.completed && (
         <div
