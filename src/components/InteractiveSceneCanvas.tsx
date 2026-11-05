@@ -107,6 +107,7 @@ export default function InteractiveSceneCanvas({
 
   return (
     <div
+      className="interactive-canvas-container"
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -119,6 +120,7 @@ export default function InteractiveSceneCanvas({
       {/* Section SVG interactive (haut - 65%) */}
       <div
         ref={canvasRef}
+        className="interactive-svg-section"
         style={{
           flex: '0 0 65%',
           position: 'relative',
@@ -418,6 +420,7 @@ export default function InteractiveSceneCanvas({
 
       {/* Section carte 3D (bas - 35%) */}
       <div
+        className="interactive-map-section"
         style={{
           flex: '0 0 35%',
           position: 'relative',
