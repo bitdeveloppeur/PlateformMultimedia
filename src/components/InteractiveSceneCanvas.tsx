@@ -93,6 +93,55 @@ export default function InteractiveSceneCanvas({
         }
         break;
 
+      case 'gold':
+        // Ramasser 3 lingots d'or
+        if (element === 'gold-bar') {
+          const newProgress = Math.min(actionState.progress + 33.33, 100);
+          setActionState({ 
+            completed: newProgress >= 100, 
+            progress: newProgress 
+          });
+          if (newProgress >= 100) {
+            setTimeout(onActionComplete, 1000);
+          }
+        }
+        break;
+
+      case 'bricks':
+        // Construire le mur en cliquant 8 fois
+        if (element === 'brick') {
+          const newProgress = Math.min(actionState.progress + 12.5, 100);
+          setActionState({ 
+            completed: newProgress >= 100, 
+            progress: newProgress 
+          });
+          if (newProgress >= 100) {
+            setTimeout(onActionComplete, 1000);
+          }
+        }
+        break;
+
+      case 'donkey':
+        if (element === 'donkey') {
+          setActionState({ completed: true, progress: 100 });
+          setTimeout(onActionComplete, 1000);
+        }
+        break;
+
+      case 'bird':
+        if (element === 'bird') {
+          setActionState({ completed: true, progress: 100 });
+          setTimeout(onActionComplete, 1000);
+        }
+        break;
+
+      case 'star':
+        if (element === 'star') {
+          setActionState({ completed: true, progress: 100 });
+          setTimeout(onActionComplete, 1000);
+        }
+        break;
+
       default:
         // Pas d'interaction, passer directement
         setActionState({ completed: true, progress: 100 });

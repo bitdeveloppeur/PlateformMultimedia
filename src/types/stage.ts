@@ -25,7 +25,7 @@ export interface StagePose {
 }
 
 /** Micro-tâches tactiles connues du moteur (voir InteractiveStory). */
-export type StageAct = 'gallop' | 'king' | 'okra' | 'stars' | 'bushes' | 'baby';
+export type StageAct = 'gallop' | 'king' | 'okra' | 'stars' | 'bushes' | 'baby' | 'gold' | 'bricks' | 'donkey' | 'bird' | 'star';
 
 /** Coordonnées de caméra pour animer la carte 3D. */
 export interface MapCoords {
@@ -57,7 +57,22 @@ export interface StageScene {
   hunter?: StagePose | null;
   mother?: StagePose | null;
   /** Position horizontale de la forêt (1700 = hors scène). */
-  forest: { x: number };
+  forest?: { x: number };
+  /** Ruines de Loropéni */
+  ruins?: StagePose | null;
+  /** Arbre/Baobab */
+  tree?: StagePose | null;
+  tree2?: StagePose | null;
+  /** Âne de caravane */
+  donkey?: StagePose | null;
+  /** Personnage lobi */
+  person?: StagePose | null;
+  /** Oiseau */
+  bird?: StagePose | null;
+  /** Végétation/buissons */
+  bushes?: StagePose | null;
+  /** Étoile UNESCO */
+  star?: StagePose | null;
   /** Tâche de la page. */
   act?: StageAct | null;
   /** Page de couverture (titre masqué, texte d'invitation). */
