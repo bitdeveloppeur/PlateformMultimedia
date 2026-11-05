@@ -125,7 +125,7 @@ export default function InteractiveSceneCanvas({
           flex: '0 0 65%',
           position: 'relative',
           background: page.sky,
-          overflow: 'hidden',
+          overflow: 'visible',
           cursor: actionState.completed ? 'default' : 'pointer',
         }}
       >
@@ -271,21 +271,23 @@ export default function InteractiveSceneCanvas({
           onClick={() => handleInteraction('ground')}
           style={{
             position: 'absolute',
-            bottom: '20%',
-            left: '30%',
-            width: '40%',
-            height: '30%',
-            background: 'rgba(139, 69, 19, 0.3)',
-            borderRadius: '8px',
-            border: '2px dashed rgba(139, 69, 19, 0.5)',
+            bottom: '15%',
+            left: '25%',
+            width: '50%',
+            height: '35%',
+            background: 'rgba(139, 69, 19, 0.4)',
+            borderRadius: '12px',
+            border: '3px dashed rgba(139, 69, 19, 0.7)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            zIndex: 50,
+            boxShadow: '0 4px 20px rgba(139, 69, 19, 0.3)',
           }}
         >
           {actionState.progress > 0 && (
-            <div style={{ fontSize: '48px' }}>
+            <div style={{ fontSize: '48px', zIndex: 51 }}>
               {'🌱'.repeat(Math.floor(actionState.progress / 33.33))}
             </div>
           )}
@@ -301,21 +303,25 @@ export default function InteractiveSceneCanvas({
             top: 0,
             left: 0,
             width: '100%',
-            height: '40%',
+            height: '45%',
             cursor: 'pointer',
             display: 'flex',
             justifyContent: 'space-around',
             alignItems: 'center',
             padding: '20px',
+            zIndex: 50,
+            background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 100%)',
           }}
         >
           {[...Array(5)].map((_, i) => (
             <div
               key={i}
               style={{
-                fontSize: '32px',
-                opacity: i < (actionState.progress / 20) ? 1 : 0.3,
+                fontSize: '40px',
+                opacity: i < (actionState.progress / 20) ? 1 : 0.4,
                 transition: 'opacity 0.3s',
+                filter: i < (actionState.progress / 20) ? 'drop-shadow(0 0 10px #FFD700)' : 'none',
+                transform: i < (actionState.progress / 20) ? 'scale(1.2)' : 'scale(1)',
               }}
             >
               ⭐
@@ -329,12 +335,13 @@ export default function InteractiveSceneCanvas({
         <div
           style={{
             position: 'absolute',
-            bottom: '20%',
+            bottom: '18%',
             left: '50%',
             width: '50%',
             display: 'flex',
             gap: '60px',
             justifyContent: 'center',
+            zIndex: 50,
           }}
         >
           {[...Array(3)].map((_, i) => (
@@ -350,15 +357,16 @@ export default function InteractiveSceneCanvas({
                 backgroundPosition: 'center',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease-out',
-                filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))',
+                filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.3))',
+                zIndex: 51,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'scale(1.15) translateY(-10px)';
-                e.currentTarget.style.filter = 'drop-shadow(0 8px 16px rgba(45,80,22,0.4)) brightness(1.1)';
+                e.currentTarget.style.transform = 'scale(1.2) translateY(-15px)';
+                e.currentTarget.style.filter = 'drop-shadow(0 10px 20px rgba(45,80,22,0.5)) brightness(1.15)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.filter = 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))';
+                e.currentTarget.style.filter = 'drop-shadow(0 6px 12px rgba(0,0,0,0.3))';
               }}
             />
           ))}
