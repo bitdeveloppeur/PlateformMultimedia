@@ -1,12 +1,11 @@
 /**
  * Conte interactif — page-par-page sur stage SVG animé (design story.pen).
- * Pré-rendu statique pour les récits disposant de scènes interactives
- * (Yennenga à ce stade) ; les autres ids → 404 propre.
+ * Utilise InteractiveSceneCanvas avec le système StageBook.
  */
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-import InteractiveStoryClient from './InteractiveStoryClient';
+import InteractiveStoryClient from '@/components/InteractiveStoryClient';
 import { getStoryById, stories } from '@/data/stories';
 import { getStageBook } from '@/data/scenes';
 
@@ -33,5 +32,5 @@ export default async function ContePage({ params }: ContePageProps) {
   const story = getStoryById(id);
   const book = story && getStageBook(story.id);
   if (!story || !book) notFound();
-  return <InteractiveStoryClient story={story} book={book} />;
+  return <InteractiveStoryClient story={story} />;
 }
